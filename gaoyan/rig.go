@@ -64,7 +64,7 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 	config_topics := []string{fmt.Sprintf("haworkshopyc1/sensor/%s/totalhash/config", rig.ID)}
 	config_payloads := []string{fmt.Sprintf("{\"name\": \"%s-totalhash\", \"unique_id\": \"%s-totalhash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"B\",\"value_template\": \"{{ value_json.maincrypto.hashrate }}\" }", rig.ID, rig.ID, topic_state)}
 
-	for i, g := range mi.GPUS {
+	for i, _ := range mi.GPUS {
 		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/temp/config", rig.ID, i))
 		config_payloads = append(config_payloads, fmt.Sprintf("{\"device_class\": \"temperature\", \"name\": \"%s-%d-temp\", \"unique_id\": \"%s-%d-temp\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"°C\" ,  \"value_template\": \"{{ value_json.GPUS[%d].remperatue }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
 
