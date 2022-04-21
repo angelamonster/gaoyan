@@ -23,14 +23,17 @@ func do_job(c mqtt.Client) {
 	//log.Println("do some job")
 
 	for _, rig := range rigs {
-		json_string, err := rig.GetStat()
-		if err != nil {
-			log.Println(err)
-		} else {
-			//log.Print(json_string)
-			log.Printf("%s update", rig.ID)
-			rig.PublishData(c, json_string)
-		}
+		go func(rig gaoyan.RIG) {
+			json_string, err := rig.GetStat()
+			if err != nil {
+				log.Println(err)
+			} else {
+				//log.Print(json_string)
+				log.Printf("%s update", rig.ID)
+				rig.PublishData(c, json_string)
+			}
+		}(rig)
+
 	}
 
 	//gaoyan.PublishData()
