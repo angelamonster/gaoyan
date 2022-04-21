@@ -52,6 +52,7 @@ func (m METER) Read(host string, port int) (json_string string, err error) {
 	conn, cerr := modbusclient.ConnectTCP(host, port)
 	if cerr != nil {
 		log.Println(fmt.Sprintf("Connection error: %s", cerr))
+		return "", cerr
 	} else {
 
 		// attempt to read one (0x01) holding registers starting at address 200
@@ -88,6 +89,8 @@ func (m METER) Read(host string, port int) (json_string string, err error) {
 		// log.Println(writeResult)
 
 		modbusclient.DisconnectTCP(conn)
+
+		return "", nil
 	}
 
 	// client := modbus.TCPClient(fmt.Sprintf("%s:%d", host, port))
