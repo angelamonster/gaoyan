@@ -158,7 +158,7 @@ loop:
 				log.Println(token.Error())
 			}
 		} else {
-			do_job()
+			do_job(mqtt_client)
 		}
 
 		select {
