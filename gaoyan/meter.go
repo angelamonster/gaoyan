@@ -44,8 +44,8 @@ func (m METER) Read(host string, port int, addr int) (json_string string, err er
 		// 	log.Printf("%02x", b)
 		// }
 		// log.Println("")
-
-		m.V[0] = float64(results[0]) * 0.1
+		var v uint16 = uint16(results[0])<<8 + uint16(results[1])
+		m.V[0] = float64(v) * 0.1
 		m.V[1] = float64(results[1]) * 0.1
 		m.V[2] = float64(results[2]) * 0.1
 		m.I[0] = float64(results[0x03+0]) * 0.01
