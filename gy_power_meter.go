@@ -131,7 +131,7 @@ loop:
 		}
 
 		select {
-		case <-time.After(time.Millisecond * 10000):
+		case <-time.After(time.Millisecond * 5000):
 		case <-done:
 			log.Println("job stopped, exting...")
 			break loop
