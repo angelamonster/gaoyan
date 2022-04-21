@@ -1,6 +1,7 @@
 package gaoyan
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
@@ -25,22 +26,55 @@ type METER struct {
 	RPTotal float64
 	F       [3]float64
 	E       float64
+	V       [3]float64
 }
 
-func (m METER) Read(host string, port int, addr int) {
+func (m METER) Read(host string, port int, addr int) (json_string string, err error) {
 	client := modbus.TCPClient(fmt.Sprintf("%s:%d", host, port))
 	// Read input register 9
 	var count uint16 = 0x1E + 1
 	results, err := client.ReadInputRegisters(0, count)
 	if err != nil {
 		log.Println(fmt.Sprintf("Connection error: %s", err))
+		return "", err
 	} else {
-		log.Println(fmt.Sprintf("result: %s", results))
+		// log.Println(fmt.Sprintf("result: %s", results))
 
-		for _, b := range results {
-			log.Printf("%02x", b)
+		// for _, b := range results {
+		// 	log.Printf("%02x", b)
+		// }
+		// log.Println("")
+
+		m.V[0] = float64(results[0]) * 0.1
+		m.V[1] = float64(results[1]) * 0.1
+		m.V[2] = float64(results[2]) * 0.1
+		m.I[0] = float64(results[0x03+0]) * 0.01
+		m.I[1] = float64(results[0x03+1]) * 0.01
+		m.I[2] = float64(results[0x03+2]) * 0.01
+		m.PTotal = float64(results[0x07])
+		m.P[0] = float64(results[0x08+0])
+		m.P[1] = float64(results[0x08+1])
+		m.P[2] = float64(results[0x08+2])
+		m.RPTotal = float64(results[0x0b])
+		m.RP[0] = float64(results[0x0c+0])
+		m.RP[1] = float64(results[0x0c+1])
+		m.RP[2] = float64(results[0x0c+2])
+		m.APTotal = float64(results[0x0f])
+		m.AP[0] = float64(results[0x10+0])
+		m.AP[1] = float64(results[0x10+1])
+		m.AP[2] = float64(results[0x10+2])
+		m.F[0] = float64(results[0x1a+0]) * 0.01
+		m.F[1] = float64(results[0x1a+1]) * 0.01
+		m.F[2] = float64(results[0x1a+2]) * 0.01
+
+		json_bytes, err := json.Marshal(m)
+
+		if err != nil {
+			log.Printf("json error: %s", err)
+			return "", err
 		}
-		log.Println("")
+		return string(json_bytes), nil
+
 	}
 
 	// //host := "127.0.0.1"
