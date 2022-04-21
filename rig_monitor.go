@@ -23,7 +23,7 @@ func do_job(c mqtt.Client) {
 	log.Println("loop")
 
 	for _, rig := range rigs {
-		go func(rig gaoyan.RIG) {
+		go func(rig *gaoyan.RIG) {
 			json_string, err := rig.GetStat()
 			if err != nil {
 				log.Println(err)
@@ -36,7 +36,7 @@ func do_job(c mqtt.Client) {
 				rig.PublishData(c, json_string)
 				log.Printf("%s", rig.ID)
 			}
-		}(rig)
+		}(&rig)
 
 	}
 
