@@ -1,19 +1,29 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	rig "./package"
+	gaoyan "./package"
 )
+
+var rig_w0004 = gaoyan.RIG{"w0004", "192.168.0.204", "user", "1", 3334}
+var rig_w0005 = gaoyan.RIG{"w0005", "192.168.0.205", "user", "9UNXmhyV", 3334}
+var rig_w0007 = gaoyan.RIG{"w0007", "192.168.0.207", "user", "1", 3334}
+
+var rigs = [3]gaoyan.RIG{rig_w0004, rig_w0005, rig_w0007}
 
 func do_job() {
 	log.Println("do some job")
-	rig.Update()
+	//gaoyan.RIG.Update()
+	for _, rig := range rigs {
+		rig.PublishData()
+	}
+	//gaoyan.PublishData()
+	//gaoyan.PublishConfig()
 
 	// rig_205a = HIVERIG("w0005", "192.168.0.205", "user", "9UNXmhyV")
 	// rig_207b = HIVERIG("w0007", "192.168.0.207", "user", "1")
@@ -36,6 +46,10 @@ func do_job() {
 	// fmt.Println(string(json_bytes))
 }
 
+func init() {
+
+}
+
 func main() {
 
 	sigs := make(chan os.Signal, 1)
@@ -45,7 +59,7 @@ func main() {
 
 	go func() {
 		for sig := range sigs {
-			log.Printf("captured %v, stopping profiler and exiting..", sig)
+			log.Printf("captured %v, stop job..", sig)
 			done <- true
 		}
 	}()
@@ -53,12 +67,12 @@ func main() {
 loop:
 	for {
 		select {
-		case <-time.After(time.Millisecond * 1000):
+		case <-time.After(time.Millisecond * 5000):
+			log.Println("after some time, do job")
 			do_job()
-			fmt.Println("after some time, do job")
 
 		case <-done:
-			fmt.Println("exting")
+			log.Println("job stopped, exting...")
 			break loop
 		}
 	}
