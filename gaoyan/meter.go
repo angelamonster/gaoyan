@@ -40,12 +40,12 @@ func (m METER) Read(host string, port int, addr int) {
 	} else {
 
 		// attempt to read one (0x01) holding registers starting at address 200
+		addr = 0x00
 		readData := make([]byte, 3)
-		readData[0] = byte(200 >> 8)   // (High Byte)
-		readData[1] = byte(200 & 0xff) // (Low Byte)
+		readData[0] = byte(addr >> 8)   // (High Byte)
+		readData[1] = byte(addr & 0xff) // (Low Byte)
 		readData[2] = 0x01
 
-		addr = 0x00
 		// count := 0x1E + 1
 		// unit := 0x1
 		//													# address count unit
