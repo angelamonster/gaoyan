@@ -339,17 +339,17 @@ func paint_console() {
 	// t.AppendSeparator()
 	// t.AppendFooter(table.Row{"", "Total", (w0004.Hash + w0005.Hash + w0007.Hash) / 1000000, meter.PA + meter.PB + meter.PC, psolar})
 
-	t.AppendHeader(table.Row{"ID", "Hash(MB)", "Power(W)"})
-	t.AppendRow(table.Row{"w0004", hash_4, pa})
-	t.AppendRow(table.Row{"w0005", hash_5, pb})
-	t.AppendRow(table.Row{"w0007", hash_7, pc})
+	t.AppendHeader(table.Row{"ID", "Hash(MB)", "TEMP", "Power(W)"})
+	t.AppendRow(table.Row{"4", hash_4, w0004.HighTemp, pa})
+	t.AppendRow(table.Row{"5", hash_5, w0005.HighTemp, pb})
+	t.AppendRow(table.Row{"7", hash_7, w0007.HighTemp, pc})
 	t.AppendSeparator()
-	t.AppendRow(table.Row{"Total", (w0004.MainCrypto.HashRate + w0005.MainCrypto.HashRate + w0007.MainCrypto.HashRate) / 1000000, meter.PA + meter.PB + meter.PC})
+	t.AppendRow(table.Row{"Total", (w0004.MainCrypto.HashRate + w0005.MainCrypto.HashRate + w0007.MainCrypto.HashRate) / 1000000, "", meter.PA + meter.PB + meter.PC})
 	t.AppendSeparator()
-	t.AppendRow(table.Row{"ginlong", psolar_ginlong})
-	t.AppendRow(table.Row{"sungrow", psolar_sungrow})
+	t.AppendRow(table.Row{"G", "", "", psolar_ginlong})
+	t.AppendRow(table.Row{"S", "", "", psolar_sungrow})
 	t.AppendSeparator()
-	t.AppendRow(table.Row{"Total", psolar, esolar})
+	t.AppendRow(table.Row{"Total", "", esolar, psolar})
 
 	//==========================================================================
 	// ASCII is too simple for me.
