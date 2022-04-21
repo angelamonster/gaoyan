@@ -61,8 +61,10 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 	//     topic_totalhash_config = "haworkshopyc1/sensor/{}/totalhash/config".format(self.id)
 	//     totalhash_config = '{{"name": "{}-totalhash", "unique_id": "{}-totalhash", "state_topic": "{}",   "unit_of_measurement": "B","value_template": "{{{{ value_json.hash }}}}"  , "expire_after":"120" }}'.format(self.id,self.id,self.topic_state)
 	//     mqtt.client.publish(topic_totalhash_config, payload=totalhash_config, qos=2,retain=True)     # 发送消息
-	config_topics := []string{fmt.Sprintf("haworkshopyc1/sensor/%s/totalhash/config", rig.ID)}
-	config_payloads := []string{fmt.Sprintf("{\"name\": \"%s-totalhash\", \"unique_id\": \"%s-totalhash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"B\",\"value_template\": \"{{ value_json.maincrypto.hashrate }}\" }", rig.ID, rig.ID, topic_state)}
+	config_topics := []string{fmt.Sprintf("haworkshopyc1/sensor/%s/totalhash/config", rig.ID),
+		fmt.Sprintf("haworkshopyc1/sensor/%s/hightemperature/config", rig.ID)}
+	config_payloads := []string{fmt.Sprintf("{\"name\": \"%s-totalhash\", \"unique_id\": \"%s-totalhash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"B\",\"value_template\": \"{{ value_json.maincrypto.hashrate }}\" }", rig.ID, rig.ID, topic_state),
+		fmt.Sprintf("{\"device_class\": \"temperature\", \"name\": \"%s-hightemperature\", \"unique_id\": \"%s-hightemperature\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"°C\",\"value_template\": \"{{ value_json.hightemperature }}\" }", rig.ID, rig.ID, topic_state)}
 
 	for i, _ := range mi.GPUS {
 		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/temp/config", rig.ID, i))

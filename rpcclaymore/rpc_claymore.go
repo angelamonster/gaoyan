@@ -84,6 +84,7 @@ type MinerInfo struct {
 	MainPool   PoolInfo `json:"mainpool"`
 	AltPool    PoolInfo `json:"altpool"`
 	Timestamp  int64    `json:"timestamp"`
+	HighTemp   int      `json:"hightemperature"`
 	GPUS       []GPU
 }
 
@@ -201,6 +202,9 @@ func parseResponse(info []string) MinerInfo {
 	for i, val := range splitGroup(info[6]) {
 		if i%2 == 0 {
 			mi.GPUS[i/2].Temperature = toInt(val)
+			if mi.HighTemp < toInt(val) {
+				mi.HighTemp = toInt(val)
+			}
 		} else {
 			mi.GPUS[(i-1)/2].FanSpeed = toInt(val)
 		}
