@@ -1,7 +1,6 @@
 package gaoyan
 
 import (
-	"fmt"
 	"log"
 
 	//modbus "github.com/goburrow/modbus"
@@ -51,7 +50,7 @@ func (m METER) Read(host string, port int) (json_string string, err error) {
 
 	conn, cerr := modbusclient.ConnectTCP(host, port)
 	if cerr != nil {
-		log.Println(fmt.Sprintf("Connection error: %s", cerr))
+		log.Printf("Connection error: %s", cerr)
 		return "", cerr
 	} else {
 
@@ -68,7 +67,7 @@ func (m METER) Read(host string, port int) (json_string string, err error) {
 		//													# address count unit
 		//            request = client.read_holding_registers(0, 0x1E+1,unit=self.UNIT)
 		// make this read request transaction id 1, with a 300 millisecond tcp timeout
-		readResult, readErr := modbusclient.TCPRead(conn, 5000, 1, modbusclient.FUNCTION_READ_HOLDING_REGISTERS, false, 0x00, readData, trace)
+		readResult, readErr := modbusclient.TCPRead(conn, 5000, 1, modbusclient.FUNCTION_READ_HOLDING_REGISTERS, true, 0x00, readData, trace)
 
 		//readResult, readErr := modbusclient.TCPRead(conn, 300, 1, modbusclient.FUNCTION_READ_HOLDING_REGISTERS, false, 0x00, readData, trace)
 		if readErr != nil {
