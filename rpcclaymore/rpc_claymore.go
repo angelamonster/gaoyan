@@ -2,6 +2,7 @@ package rpcclaymore
 
 import (
 	"fmt"
+	"log"
 	"net/rpc/jsonrpc"
 	"strconv"
 	"strings"
@@ -159,6 +160,9 @@ func (m Miner) GetInfo() (MinerInfo, error) {
 	if err != nil {
 		return mi, err
 	}
+
+	log.Println(reply)
+
 	return parseResponse(reply), nil
 }
 
