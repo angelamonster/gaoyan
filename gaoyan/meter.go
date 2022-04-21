@@ -61,7 +61,7 @@ func (m METER) Read(host string, port int) (json_string string, err error) {
 		readData[0] = byte(addr >> 8)   // (High Byte)
 		readData[1] = byte(addr & 0xff) // (Low Byte)
 		//[2] = 0x01
-		readData[2] = 0x01
+		readData[2] = byte(0x1E + 1)
 		// count := 0x1E + 1
 		//var U_INT byte = 0x1
 		//													# address count unit
@@ -73,6 +73,7 @@ func (m METER) Read(host string, port int) (json_string string, err error) {
 		if readErr != nil {
 			log.Println(readErr)
 		}
+		log.Println("readResult")
 		log.Println(readResult)
 
 		// // attempt to write to a single coil at address 300
