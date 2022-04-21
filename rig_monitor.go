@@ -19,19 +19,18 @@ var rig_w0007 = gaoyan.RIG{ID: "w0007", IP: "192.168.0.207", Username: "user", P
 
 var rigs = [3]gaoyan.RIG{rig_w0004, rig_w0005, rig_w0007}
 
-func do_job() {
+func do_job(c mqtt.Client) {
 	log.Println("do some job")
-	//gaoyan.RIG.Update()
 
-	// for _, rig := range rigs {
-	// 	json_string, err := rig.GetStat()
-	// 	if err != nil {
-	// 		panic(err)
-	// 	} else {
-	// 		log.Print(json_string)
-	// 		rig.PublishData(json_string)
-	// 	}
-	// }
+	for _, rig := range rigs {
+		json_string, err := rig.GetStat()
+		if err != nil {
+			panic(err)
+		} else {
+			log.Print(json_string)
+			rig.PublishData(c, json_string)
+		}
+	}
 
 	//gaoyan.PublishData()
 	//gaoyan.PublishConfig()
@@ -99,6 +98,7 @@ func init_mqtt() mqtt.Client {
 	connOpts.SetTLSConfig(tlsConfig)
 
 	connOpts.OnConnect = func(c mqtt.Client) {
+		log.Println("mqtt OnConnect")
 		// topics := map[string]byte{"haworkshopyc1/sensor/w0004/state": 0,
 		// 	"haworkshopyc1/sensor/w0005/state":         0,
 		// 	"haworkshopyc1/sensor/w0007/state":         0,
@@ -108,8 +108,14 @@ func init_mqtt() mqtt.Client {
 		// 	//if token := c.Subscribe(*topic, byte(*qos), onMessageReceived); token.Wait() && token.Error() != nil {
 		// 	panic(token.Error())
 		// }
+		for _, rig := range rigs {
+			json_string, err := rig.GetStat()
+			if err == nil {
+				rig.PublishConfig(c, json_string)
+			}
+		}
+
 		mqtt_status = 1
-		log.Println("mqtt OnConnect")
 	}
 	connOpts.OnConnectionLost = func(c mqtt.Client, err error) {
 		mqtt_status = 0
