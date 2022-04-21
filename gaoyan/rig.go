@@ -6,6 +6,7 @@ import (
 	"log"
 
 	claymore "../rpcclaymore"
+	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
 type RIG struct {
@@ -34,13 +35,26 @@ func (rig RIG) GetStat() (string, error) {
 	}
 
 	return string(json_bytes), nil
+	//return "okok test", nil
 }
 
-func (rig RIG) PublishConfig() {
-	log.Printf("PublishConfig for %s", rig.ID)
-
-}
-func (rig RIG) PublishData() {
+func (rig RIG) PublishData(c mqtt.Client, json_data string) {
 	log.Printf("PublishData for %s", rig.ID)
 
+	topic_state := fmt.Sprintf("haworkshopyc1/sensor/%s/state", rig.ID)
+
+	c.Publish(topic_state, 0, false, json_data)
+}
+
+func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
+	log.Printf("PublishConfig for %s", rig.ID)
+	topic_state := fmt.Sprintf("haworkshopyc1/sensor/%s/state", rig.ID)
+
+	 mi := new(claymore.MinerInfo)
+	
+	json.Unmarshal([]byte(json_data),&mi)
+	
+	for i,g in range mi.GPUS{
+		log.println(g)		
+	}
 }
