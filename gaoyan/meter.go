@@ -29,7 +29,10 @@ type METER struct {
 	V       [3]float64
 }
 
-func build_value(high byte, low byte) float64 {
+func build_value(results []byte, pos int) float64 {
+
+	var high byte = results[pos]
+	var low byte = results[pos+1]
 
 	var v uint32 = uint32(high)<<8 + uint32(low)
 	var s uint32 = 0x10000
@@ -57,27 +60,31 @@ func (m METER) Read(host string, port int, addr int) (json_string string, err er
 		// 	log.Printf("%02x", b)
 		// }
 		// log.Println("")
-		m.V[0] = build_value(results[0], results[1]) * 0.1
-		m.V[1] = build_value(results[2], results[3]) * 0.1
-		m.V[2] = build_value(results[4], results[5]) * 0.1
-		m.I[0] = float64(results[0x03+0]) * 0.01
-		m.I[1] = float64(results[0x03+1]) * 0.01
-		m.I[2] = float64(results[0x03+2]) * 0.01
-		m.PTotal = float64(results[0x07])
-		m.P[0] = float64(results[0x08+0])
-		m.P[1] = float64(results[0x08+1])
-		m.P[2] = float64(results[0x08+2])
-		m.RPTotal = float64(results[0x0b])
-		m.RP[0] = float64(results[0x0c+0])
-		m.RP[1] = float64(results[0x0c+1])
-		m.RP[2] = float64(results[0x0c+2])
-		m.APTotal = float64(results[0x0f])
-		m.AP[0] = float64(results[0x10+0])
-		m.AP[1] = float64(results[0x10+1])
-		m.AP[2] = float64(results[0x10+2])
-		m.F[0] = float64(results[0x1a+0]) * 0.01
-		m.F[1] = float64(results[0x1a+1]) * 0.01
-		m.F[2] = float64(results[0x1a+2]) * 0.01
+
+		m.V[0] = build_value(results, 0) * 0.1
+		m.V[1] = build_value(results, 2) * 0.1
+		m.V[2] = build_value(results, 4) * 0.1
+		m.I[0] = build_value(results, (0x03+0)*2) * 0.01
+		m.I[1] = build_value(results, (0x03+1)*2) * 0.01
+		m.I[2] = build_value(results, (0x03+2)*2) * 0.01
+		m.I[0] = build_value(results, (0x03+0)*2) * 0.01
+		m.I[1] = build_value(results, (0x03+1)*2) * 0.01
+		m.I[2] = build_value(results, (0x03+2)*2) * 0.01
+		m.PTotal = build_value(results, (0x07)*2)
+		m.P[0] = build_value(results, (0x08+0)*2)
+		m.P[1] = build_value(results, (0x08+1)*2)
+		m.P[2] = build_value(results, (0x08+2)*2)
+		m.RPTotal = build_value(results, (0x0b)*2)
+		m.RP[0] = build_value(results, (0x0c+0)*2)
+		m.RP[1] = build_value(results, (0x0c+1)*2)
+		m.RP[2] = build_value(results, (0x0c+2)*2)
+		m.APTotal = build_value(results, (0x0f)*2)
+		m.AP[0] = build_value(results, (0x10+0)*2)
+		m.AP[1] = build_value(results, (0x10+1)*2)
+		m.AP[2] = build_value(results, (0x10+2)*2)
+		m.F[0] = build_value(results, (0x1a+0)*2) * 0.01
+		m.F[1] = build_value(results, (0x1a+1)*2) * 0.01
+		m.F[2] = build_value(results, (0x1a+2)*2) * 0.01
 
 		json_bytes, err := json.Marshal(m)
 
