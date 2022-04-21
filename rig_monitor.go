@@ -22,21 +22,21 @@ var rigs = [3]gaoyan.RIG{rig_w0004, rig_w0005, rig_w0007}
 func do_job(c mqtt.Client) {
 	log.Println("loop")
 
-	for _, rig := range rigs {
-		go func(rig *gaoyan.RIG) {
-			json_string, err := rig.GetStat()
+	for i, rig := range rigs {
+		go func(i int) {
+			json_string, err := rigs[i].GetStat()
 			if err != nil {
 				log.Println(err)
 			} else {
-				if false == rig.ConfigSent {
-					rig.PublishConfig(c, json_string)
-					rig.ConfigSent = true
+				if false == rigs[i].ConfigSent {
+					rigs[i].PublishConfig(c, json_string)
+					rigs[i].ConfigSent = true
 				}
 				//log.Print(json_string)
-				rig.PublishData(c, json_string)
-				log.Printf("%s", rig.ID)
+				rigs[i].PublishData(c, json_string)
+				log.Printf("%s", rigs[i].ID)
 			}
-		}(&rig)
+		}(i)
 
 	}
 
