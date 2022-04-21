@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	claymore "github.com/ivanbeldad/rpc-claymore"
+	claymore "../rpcclaymore"
 )
 
 type RIG struct {
@@ -16,7 +16,7 @@ type RIG struct {
 	ClaymorePort int
 }
 
-func GetStat(rig RIG) {
+func (rig RIG) GetStat() (string, error) {
 	log.Println("GetStat")
 
 	miner := claymore.Miner{Address: fmt.Sprintf("%s:%d", rig.ID, rig.ClaymorePort)}
@@ -24,14 +24,16 @@ func GetStat(rig RIG) {
 
 	if err != nil {
 		log.Fatal(err)
+		return "", err
 	}
 
 	json_bytes, err := json.Marshal(info)
 	if err != nil {
 		log.Fatal(err)
+		return "", err
 	}
 
-	fmt.Println(string(json_bytes))
+	return string(json_bytes), nil
 }
 
 func (rig RIG) PublishConfig() {
