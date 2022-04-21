@@ -54,7 +54,7 @@ loop:
 	for {
 		select {
 		case <-time.After(time.Millisecond * 1000):
-
+			do_job()
 			fmt.Println("after some time, do job")
 
 		case <-done:
