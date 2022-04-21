@@ -2,7 +2,6 @@ package rpcclaymore
 
 import (
 	"fmt"
-	"log"
 	"net/rpc/jsonrpc"
 	"strconv"
 	"strings"
@@ -161,8 +160,6 @@ func (m Miner) GetInfo() (MinerInfo, error) {
 		return mi, err
 	}
 
-	log.Println(reply)
-
 	return parseResponse(reply), nil
 }
 
@@ -176,12 +173,12 @@ func parseResponse(info []string) MinerInfo {
 	mi.UpTime = toInt(info[1])
 
 	group = splitGroup(info[2])
-	mi.MainCrypto.HashRate = toInt(group[0])
+	mi.MainCrypto.HashRate = toInt(group[0]) * 1000
 	mi.MainCrypto.Shares = toInt(group[1])
 	mi.MainCrypto.RejectedShares = toInt(group[2])
 
 	group = splitGroup(info[4])
-	mi.AltCrypto.HashRate = toInt(group[0])
+	mi.AltCrypto.HashRate = toInt(group[0]) * 1000
 	mi.AltCrypto.Shares = toInt(group[1])
 	mi.AltCrypto.RejectedShares = toInt(group[2])
 
@@ -198,7 +195,7 @@ func parseResponse(info []string) MinerInfo {
 	mi.AltPool.Switches = toInt(group[3])
 
 	for _, hashrate := range splitGroup(info[3]) {
-		mi.GPUS = append(mi.GPUS, GPU{HashRate: toInt(hashrate)})
+		mi.GPUS = append(mi.GPUS, GPU{HashRate: toInt(hashrate) * 1000})
 	}
 
 	for i, val := range splitGroup(info[6]) {
@@ -213,7 +210,7 @@ func parseResponse(info []string) MinerInfo {
 		for i, val := range splitGroup(info[5]) {
 			hashrate, err := strconv.Atoi(val)
 			if err == nil {
-				mi.GPUS[i].AltHashRate = hashrate
+				mi.GPUS[i].AltHashRate = hashrate * 1000
 			}
 		}
 	}
