@@ -28,6 +28,7 @@ func do_job(c mqtt.Client) {
 			log.Println(err)
 		} else {
 			//log.Print(json_string)
+			log.Printf("%s update", rig.ID)
 			rig.PublishData(c, json_string)
 		}
 	}

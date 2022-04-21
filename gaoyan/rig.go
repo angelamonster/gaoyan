@@ -39,7 +39,7 @@ func (rig RIG) GetStat() (string, error) {
 }
 
 func (rig RIG) PublishData(c mqtt.Client, json_data string) {
-	log.Printf("PublishData for %s", rig.ID)
+	//log.Printf("PublishData for %s", rig.ID)
 
 	topic_state := fmt.Sprintf("haworkshopyc1/sensor/%s/state", rig.ID)
 
