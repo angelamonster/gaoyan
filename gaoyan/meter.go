@@ -34,13 +34,14 @@ func build_value(results []byte, pos int) float64 {
 	var high byte = results[pos]
 	var low byte = results[pos+1]
 
-	var v uint32 = uint32(high)<<8 + uint32(low)
-	var s uint32 = 0x10000
+	var v uint16 = uint16(high)<<8 + uint16(low)
+	//var s uint16 = 0x10000
+	var s uint16 = 0xFFFF
 
 	if v < 0x8000 {
 		return float64(v)
 	} else {
-		return float64(v - s)
+		return float64(v - s - 1)
 	}
 
 }
@@ -50,6 +51,7 @@ func (m METER) Read(host string, port int) (json_string string, err error) {
 	// Read input register 9
 	var count uint16 = 0x1E + 1
 	results, err := client.ReadInputRegisters(0, count)
+
 	if err != nil {
 		log.Printf("Connection error: %s", err)
 		return "", err
