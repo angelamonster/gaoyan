@@ -55,19 +55,19 @@ func (m METER) Read(host string, port int) (json_string string, err error) {
 	} else {
 
 		// attempt to read one (0x01) holding registers starting at address 200
-		var size int = 0x1E + 1
+		//var size int = 0x1E + 1
 		addr := 0x00
-		readData := make([]byte, size)
+		readData := make([]byte, 3)
 		readData[0] = byte(addr >> 8)   // (High Byte)
 		readData[1] = byte(addr & 0xff) // (Low Byte)
 		//[2] = 0x01
-		readData[2] = 0x1E + 1
+		readData[2] = 0x01
 		// count := 0x1E + 1
 		//var U_INT byte = 0x1
 		//													# address count unit
 		//            request = client.read_holding_registers(0, 0x1E+1,unit=self.UNIT)
 		// make this read request transaction id 1, with a 300 millisecond tcp timeout
-		readResult, readErr := modbusclient.TCPRead(conn, 5000, 1, modbusclient.FUNCTION_READ_HOLDING_REGISTERS, true, 0x00, readData, trace)
+		readResult, readErr := modbusclient.TCPRead(conn, 5000, 1, modbusclient.FUNCTION_READ_HOLDING_REGISTERS, false, 0x00, readData, trace)
 
 		//readResult, readErr := modbusclient.TCPRead(conn, 300, 1, modbusclient.FUNCTION_READ_HOLDING_REGISTERS, false, 0x00, readData, trace)
 		if readErr != nil {
