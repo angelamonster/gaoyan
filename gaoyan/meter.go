@@ -31,7 +31,7 @@ type METER struct {
 
 func float64 build_value(high byte,low byte){
 
-	var v uint16 = uint16(high[0])<<8 + uint16(low[1])
+	var v uint16 = uint16(high)<<8 + uint16(low)
 	
 	if v < 0x8000{
 		return float64(v)
