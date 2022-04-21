@@ -48,13 +48,13 @@ func (rig RIG) PublishData(c mqtt.Client, json_data string) {
 
 func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 	log.Printf("PublishConfig for %s", rig.ID)
-	topic_state := fmt.Sprintf("haworkshopyc1/sensor/%s/state", rig.ID)
+	//topic_state := fmt.Sprintf("haworkshopyc1/sensor/%s/state", rig.ID)
 
-	 mi := new(claymore.MinerInfo)
-	
-	json.Unmarshal([]byte(json_data),&mi)
-	
-	for i,g in range mi.GPUS{
-		log.println(g)		
+	mi := new(claymore.MinerInfo)
+
+	json.Unmarshal([]byte(json_data), &mi)
+
+	for g := range mi.GPUS {
+		log.Println(g)
 	}
 }
