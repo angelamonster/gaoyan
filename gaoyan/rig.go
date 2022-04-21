@@ -18,7 +18,7 @@ type RIG struct {
 }
 
 func (rig RIG) GetStat() (string, error) {
-	log.Println("GetStat")
+	//log.Println("GetStat")
 
 	miner := claymore.Miner{Address: fmt.Sprintf("%s:%d", rig.ID, rig.ClaymorePort)}
 	info, err := miner.GetInfo()
@@ -77,7 +77,7 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 	}
 
 	for i, topic := range config_topics {
-		log.Println(config_payloads[i])
+		//log.Println(config_payloads[i])
 		c.Publish(topic, 2, true, config_payloads[i])
 	}
 
