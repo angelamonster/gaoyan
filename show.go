@@ -241,6 +241,7 @@ func paint_console() {
 	fmt.Println("")
 
 	var hash_4, hash_5, hash_7, pa, pb, pc, psolar, psolar_sungrow, psolar_ginlong, esolar string
+	var high_temp_4, high_temp_5, high_temp_7 string
 	var delay_4, delay_5, delay_7, delay_meter, delay_solar int64
 
 	switch mqtt_status {
@@ -263,28 +264,34 @@ func paint_console() {
 	if delay_4 = secNow - int64(w0004.Timestamp); delay_4 > 60 {
 		//fmt.Printf("%s : offline \n", "w0004")
 		hash_4 = "-"
+		high_temp_4 = "-"
 		//delay_4 = "-"
 	} else {
 		//fmt.Printf("%s : %ds ago \n", "w0004", delay)
 		hash_4 = strconv.Itoa(w0004.MainCrypto.HashRate / 1000000)
+		high_temp_4 = strconv.Itoa(w0004.HighTemp)
 		//delay_4 = strconv.Itoa(int(delay))
 	}
 	if delay_5 = secNow - int64(w0005.Timestamp); delay_5 > 60 {
 		//fmt.Printf("%s : offline \n", "w0005")
 		hash_5 = "-"
+		high_temp_5 = "-"
 		//delay_5 = "-"
 	} else {
 		//fmt.Printf("%s : %ds ago \n", "w0005", delay)
 		hash_5 = strconv.Itoa(w0005.MainCrypto.HashRate / 1000000)
+		high_temp_5 = strconv.Itoa(w0005.HighTemp)
 		//delay_5 = strconv.Itoa(int(delay))
 	}
 	if delay_7 = secNow - int64(w0007.Timestamp); delay_7 > 60 {
 		//fmt.Printf("%s : offline \n", "w0007")
 		hash_7 = "-"
+		high_temp_7 = "-"
 		//delay_7 = "-"
 	} else {
 		//fmt.Printf("%s : %ds ago \n", "w0007", delay)
 		hash_7 = strconv.Itoa(w0007.MainCrypto.HashRate / 1000000)
+		high_temp_7 = strconv.Itoa(w0007.HighTemp)
 		//delay_7 = strconv.Itoa(int(delay))
 	}
 	//fmt.Printf("%s : %ds ago \n", "w0005", secNow-int64(w0005.Timestamp))
@@ -340,9 +347,9 @@ func paint_console() {
 	// t.AppendFooter(table.Row{"", "Total", (w0004.Hash + w0005.Hash + w0007.Hash) / 1000000, meter.PA + meter.PB + meter.PC, psolar})
 
 	t.AppendHeader(table.Row{"ID", "Hash(MB)", "TEMP", "Power(W)"})
-	t.AppendRow(table.Row{"4", hash_4, w0004.HighTemp, pa})
-	t.AppendRow(table.Row{"5", hash_5, w0005.HighTemp, pb})
-	t.AppendRow(table.Row{"7", hash_7, w0007.HighTemp, pc})
+	t.AppendRow(table.Row{"4", hash_4, high_temp_4, pa})
+	t.AppendRow(table.Row{"5", hash_5, high_temp_5, pb})
+	t.AppendRow(table.Row{"7", hash_7, high_temp_7, pc})
 	t.AppendSeparator()
 	t.AppendRow(table.Row{"Total", (w0004.MainCrypto.HashRate + w0005.MainCrypto.HashRate + w0007.MainCrypto.HashRate) / 1000000, "", meter.PA + meter.PB + meter.PC})
 	t.AppendSeparator()
