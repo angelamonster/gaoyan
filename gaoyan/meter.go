@@ -29,6 +29,18 @@ type METER struct {
 	V       [3]float64
 }
 
+func float64 build_value(high byte,low byte){
+
+	var v uint16 = uint16(high[0])<<8 + uint16(low[1])
+	
+	if v < 0x8000{
+		return float64(v)
+	}else{
+		return float64(v - 0x10000)
+	}
+	
+}
+
 func (m METER) Read(host string, port int, addr int) (json_string string, err error) {
 	client := modbus.TCPClient(fmt.Sprintf("%s:%d", host, port))
 	// Read input register 9
@@ -44,10 +56,9 @@ func (m METER) Read(host string, port int, addr int) (json_string string, err er
 		// 	log.Printf("%02x", b)
 		// }
 		// log.Println("")
-		var v uint16 = uint16(results[0])<<8 + uint16(results[1])
-		m.V[0] = float64(v) * 0.1
-		m.V[1] = float64(results[1]) * 0.1
-		m.V[2] = float64(results[2]) * 0.1
+		m.V[0] = build_value(results[0],results[1]) * 0.1
+		m.V[1] = build_value(results[2],results[3]) * 0.1
+		m.V[2] = build_value(results[4],results[5]) * 0.1
 		m.I[0] = float64(results[0x03+0]) * 0.01
 		m.I[1] = float64(results[0x03+1]) * 0.01
 		m.I[2] = float64(results[0x03+2]) * 0.01
