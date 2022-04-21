@@ -16,9 +16,10 @@ import (
 
 func do_job(c mqtt.Client) {
 	log.Println("loop")
+
 	meter := new(gaoyan.METER)
 
-	json_string, err := meter.Read("192.168.0.189", 8899, 0x1)
+	json_string, err := meter.Read("192.168.0.189", 8899)
 
 	if err != nil {
 		log.Printf("Read error: %s", err)

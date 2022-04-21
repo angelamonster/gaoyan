@@ -45,13 +45,13 @@ func build_value(results []byte, pos int) float64 {
 
 }
 
-func (m METER) Read(host string, port int, addr int) (json_string string, err error) {
+func (m METER) Read(host string, port int) (json_string string, err error) {
 	client := modbus.TCPClient(fmt.Sprintf("%s:%d", host, port))
 	// Read input register 9
 	var count uint16 = 0x1E + 1
 	results, err := client.ReadInputRegisters(0, count)
 	if err != nil {
-		log.Println(fmt.Sprintf("Connection error: %s", err))
+		log.Printf("Connection error: %s", err)
 		return "", err
 	} else {
 		// log.Println(fmt.Sprintf("result: %s", results))
