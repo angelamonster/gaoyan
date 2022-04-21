@@ -13,14 +13,14 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-var rig_w0004 = gaoyan.RIG{ID: "w0004", IP: "192.168.0.204", Username: "user", Password: "1", ClaymorePort: 3334}
-var rig_w0005 = gaoyan.RIG{ID: "w0005", IP: "192.168.0.205", Username: "user", Password: "9UNXmhyV", ClaymorePort: 3334}
-var rig_w0007 = gaoyan.RIG{ID: "w0007", IP: "192.168.0.207", Username: "user", Password: "1", ClaymorePort: 3334}
+var rig_w0004 = gaoyan.RIG{ID: "w0004", IP: "192.168.0.204", Username: "user", Password: "1", ClaymorePort: 3334, ConfigSent: false}
+var rig_w0005 = gaoyan.RIG{ID: "w0005", IP: "192.168.0.205", Username: "user", Password: "9UNXmhyV", ClaymorePort: 3334, ConfigSent: false}
+var rig_w0007 = gaoyan.RIG{ID: "w0007", IP: "192.168.0.207", Username: "user", Password: "1", ClaymorePort: 3334, ConfigSent: false}
 
 var rigs = [3]gaoyan.RIG{rig_w0004, rig_w0005, rig_w0007}
 
 func do_job(c mqtt.Client) {
-	//log.Println("do some job")
+	log.Println("loop")
 
 	for _, rig := range rigs {
 		go func(rig gaoyan.RIG) {
@@ -28,9 +28,13 @@ func do_job(c mqtt.Client) {
 			if err != nil {
 				log.Println(err)
 			} else {
+				if false == rig.ConfigSent {
+					rig.PublishConfig(c, json_string)
+					rig.ConfigSent = true
+				}
 				//log.Print(json_string)
-				log.Printf("%s update", rig.ID)
 				rig.PublishData(c, json_string)
+				log.Printf("%s", rig.ID)
 			}
 		}(rig)
 
@@ -112,12 +116,15 @@ func init_mqtt() mqtt.Client {
 		// 	//if token := c.Subscribe(*topic, byte(*qos), onMessageReceived); token.Wait() && token.Error() != nil {
 		// 	panic(token.Error())
 		// }
-		for _, rig := range rigs {
-			json_string, err := rig.GetStat()
-			if err == nil {
-				rig.PublishConfig(c, json_string)
-			}
-		}
+
+		// for _, rig := range rigs {
+		// 	json_string, err := rig.GetStat()
+		// 	if err != nil {
+		// 		log.Println(err)
+		// 	} else {
+		// 		rig.PublishConfig(c, json_string)
+		// 	}
+		// }
 
 		mqtt_status = 1
 	}
@@ -134,6 +141,7 @@ func init_mqtt() mqtt.Client {
 }
 
 func init() {
+	log.SetFlags(0)
 
 }
 

@@ -15,22 +15,22 @@ type RIG struct {
 	Username     string
 	Password     string
 	ClaymorePort int
+	ConfigSent   bool
 }
 
 func (rig RIG) GetStat() (string, error) {
-	//log.Println("GetStat")
 
 	miner := claymore.Miner{Address: fmt.Sprintf("%s:%d", rig.ID, rig.ClaymorePort)}
 	info, err := miner.GetInfo()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return "", err
 	}
 
 	json_bytes, err := json.Marshal(info)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		return "", err
 	}
 
