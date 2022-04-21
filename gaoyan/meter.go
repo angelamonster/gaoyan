@@ -35,13 +35,12 @@ func build_value(results []byte, pos int) float64 {
 	var low byte = results[pos+1]
 
 	var v uint16 = uint16(high)<<8 + uint16(low)
-	//var s uint16 = 0x10000
-	var s uint16 = 0xFFFF
+	var s uint32 = 0x10000
 
 	if v < 0x8000 {
 		return float64(v)
 	} else {
-		return float64(v - s - 1)
+		return float64(uint32(v) - s)
 	}
 
 }
