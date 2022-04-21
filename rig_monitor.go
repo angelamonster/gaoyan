@@ -20,14 +20,14 @@ var rig_w0007 = gaoyan.RIG{ID: "w0007", IP: "192.168.0.207", Username: "user", P
 var rigs = [3]gaoyan.RIG{rig_w0004, rig_w0005, rig_w0007}
 
 func do_job(c mqtt.Client) {
-	log.Println("do some job")
+	//log.Println("do some job")
 
 	for _, rig := range rigs {
 		json_string, err := rig.GetStat()
 		if err != nil {
-			panic(err)
+			log.Println(err)
 		} else {
-			log.Print(json_string)
+			//log.Print(json_string)
 			rig.PublishData(c, json_string)
 		}
 	}
@@ -151,7 +151,7 @@ func main() {
 
 loop:
 	for {
-		log.Printf("mqtt status:%d\n", mqtt_status)
+		//log.Printf("mqtt status:%d\n", mqtt_status)
 
 		if !mqtt_client.IsConnected() {
 			if token := mqtt_client.Connect(); token.Wait() && token.Error() != nil {
