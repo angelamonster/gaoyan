@@ -22,7 +22,7 @@ var rigs = [3]gaoyan.RIG{rig_w0004, rig_w0005, rig_w0007}
 func do_job(c mqtt.Client) {
 	log.Println("loop")
 
-	for i, rig := range rigs {
+	for i, _ := range rigs {
 		go func(i int) {
 			json_string, err := rigs[i].GetStat()
 			if err != nil {
