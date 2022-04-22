@@ -89,12 +89,13 @@ func (m METER) Read(host string, port int) (json_string string, err error) {
 			m.F[2] = float64(results[0x1a+2]) * 0.01
 		}
 
-		//	fmt.Printf("ReadDiscreteInputs %#v\r\n", results)
-		json_bytes, err := json.Marshal(m)
-
-		return string(json_bytes), nil
 	}
 	defer client.Close()
+
+	//	fmt.Printf("ReadDiscreteInputs %#v\r\n", results)
+	json_bytes, err := json.Marshal(m)
+
+	return string(json_bytes), nil
 
 	// // turn on the debug trace option, to see what is being transmitted
 	// trace := true
