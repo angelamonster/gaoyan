@@ -145,7 +145,7 @@ func (m METER) PublishData(c mqtt.Client, json_data string) {
 
 func (m METER) PublishConfig(c mqtt.Client) {
 	log.Printf("Publish Config for %s", m.Name)
-	topic_state := fmt.Sprintf("haworkshopyc1/sensor/%s/state", m.Name)
+	topic_state := fmt.Sprintf("haworkshopyc1/sensor/powermeter%s/state", m.Name)
 
 	config_topics := []string{}
 	config_payloads := []string{}
