@@ -62,8 +62,9 @@ func (m METER) Read(host string, port int) (string, error) {
 		fmt.Println("connect failed, ", err)
 		return "", err
 	} else {
+		var length uint16 = 0x1E + 1
 		client := modbus.NewClient(handler)
-		results, err := client.ReadDiscreteInputs(15, 2)
+		results, err := client.ReadInputRegisters(0x00, length)
 		// results, err = client.WriteMultipleRegisters(1, 2, []byte{0, 3, 0, 4})
 		// results, err = client.WriteMultipleCoils(5, 10, []byte{4, 3})
 		if err != nil {
