@@ -21,31 +21,40 @@ import (
 // mqtt "github.com/eclipse/paho.mqtt.golang"
 
 type METER struct {
-	I       [3]float64
+	V       [3]float64
 	ITotal  float64
-	P       [3]float64
+	I       [3]float64
 	PTotal  float64
-	AP      [3]float64
-	APTotal float64
-	RP      [3]float64
+	P       [3]float64
 	RPTotal float64
+	RP      [3]float64
+	APTotal float64
+	AP      [3]float64
 	F       [3]float64
 	E       float64
-	V       [3]float64
 }
 
 func byte16_to_float64(results []byte, pos int) float64 {
 
-	var high byte = results[pos]
-	var low byte = results[pos+1]
-
-	var v uint16 = uint16(high)<<8 + uint16(low)
+	var v uint16 = uint16(results[pos])<<8 + uint16(results[pos+1])
 	var s int32 = 0x10000
 
 	if v < 0x8000 {
 		return float64(v)
 	} else {
 		return float64(int32(v) - s)
+	}
+}
+
+func byte32_to_float64(results []byte, pos int) float64 {
+
+	var v uint32 = uint32(results[pos])<<24 + uint32(results[pos+1])<<16 + uint32(results[pos+2])<<8 + uint32(results[pos+3])
+	var s int64 = 0x100000000
+
+	if v < 0x8000 {
+		return float64(v)
+	} else {
+		return float64(int64(v) - s)
 	}
 
 }
@@ -94,6 +103,8 @@ func (m METER) Read(host string, port int) (string, error) {
 			m.F[0] = byte16_to_float64(results, (0x1a+0)*2) * 0.01
 			m.F[1] = byte16_to_float64(results, (0x1a+1)*2) * 0.01
 			m.F[2] = byte16_to_float64(results, (0x1a+2)*2) * 0.01
+
+			m.E = byte32_to_float64(results, (0x1D)*2) * 0.01
 
 			// m.V[0] = float64(binary.BigEndian.Uint16(results[0:0+2])) * 0.1
 			// m.V[1] = float64(binary.BigEndian.Uint16(results[2:2+2])) * 0.1
