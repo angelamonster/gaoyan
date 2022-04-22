@@ -153,7 +153,7 @@ func (m METER) PublishConfig(c mqtt.Client) {
 	unit := []string{"V", "V", "V", "A", "A", "A", "W", "W", "W", "W", "Var", "Var", "Var", "Var", "VA", "VA", "VA", "VA", "HZ", "HZ", "HZ", "kWh"}
 	for i, c := range cat {
 		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/powermeter%s/%s/config", m.Name, c))
-		config_payloads = append(config_payloads, fmt.Sprintf("{\"device_class\": \"power\", \"name\": \"power-meter-%s-%s\", \"unique_id\": \"power-meter-%s-%s\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"%s\" ,  \"value_template\": \"{{ value_json.%s }}\"  , \"expire_after\":120 }}", m.Name, c, m.Name, c, topic_state, unit[i], c))
+		config_payloads = append(config_payloads, fmt.Sprintf("{\"device_class\": \"power\", \"name\": \"power-meter-%s-%s\", \"unique_id\": \"power-meter-%s-%s\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"%s\" ,  \"value_template\": \"{{ value_json.%s }}\"  , \"expire_after\":120 }", m.Name, c, m.Name, c, topic_state, unit[i], c))
 	}
 
 	for i, topic := range config_topics {
