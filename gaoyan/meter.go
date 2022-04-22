@@ -72,13 +72,28 @@ func (m METER) Read(host string, port int) (string, error) {
 			log.Println("read failed, ", err)
 			return "", err
 		} else {
-			log.Println("result =")
-			data := binary.BigEndian.Uint16(results[0:2])
-			fmt.Println(data)
-			data = binary.BigEndian.Uint16(results[2:4])
-			fmt.Println(data)
-			data = binary.BigEndian.Uint16(results[4:6])
-			fmt.Println(data)
+			m.V[0] = float64(binary.BigEndian.Uint16(results[0:0+2])) * 0.1
+			m.V[1] = float64(binary.BigEndian.Uint16(results[2:2+2])) * 0.1
+			m.V[2] = float64(binary.BigEndian.Uint16(results[4:4+2])) * 0.1
+
+			m.I[0] = float64(binary.BigEndian.Uint16(results[(0x03+0)*2,(0x03+0)*2+1]) * 0.01
+			m.I[1] = float64(binary.BigEndian.Uint16(results[(0x03+1)*2,(0x03+1)*2+1]) * 0.01
+			m.I[2] = float64(binary.BigEndian.Uint16(results[(0x03+2)*2,(0x03+2)*2+1]) * 0.01
+			m.PTotal = float64(binary.BigEndian.Uint16(results[(0x07)*2,(0x07)*2+1])
+			m.P[0] = float64(binary.BigEndian.Uint16(results[(0x08+0)*2,(0x08+0)*2+1])
+			m.P[1] = float64(binary.BigEndian.Uint16(results[(0x08+1)*2,(0x08+1)*2+1])
+			m.P[2] = float64(binary.BigEndian.Uint16(results[(0x08+2)*2,(0x08+2)*2+1])
+			m.RPTotal = float64(binary.BigEndian.Uint16(results[(0x0b)*2,(0x0b)*2+1])
+			m.RP[0] = float64(binary.BigEndian.Uint16(results[(0x0c+0)*2,(0x0c+0)*2+1])
+			m.RP[1] = float64(binary.BigEndian.Uint16(results[(0x0c+1)*2,(0x0c+1)*2+1])
+			m.RP[2] = float64(binary.BigEndian.Uint16(results[(0x0c+2)*2,(0x0c+2)*2+1])
+			m.APTotal = float64(binary.BigEndian.Uint16(results[(0x0f)*2,(0x0f)*2+1])
+			m.AP[0] = float64(binary.BigEndian.Uint16(results[(0x10+0)*2,(0x10+0)*2+1])
+			m.AP[1] = float64(binary.BigEndian.Uint16(results[(0x10+1)*2,(0x10+1)*2+1])
+			m.AP[2] = float64(binary.BigEndian.Uint16(results[(0x10+2)*2,(0x10+2)*2+1])
+			m.F[0] = float64(binary.BigEndian.Uint16(results[(0x1a+0)*2,(0x1a+0)*2+1]) * 0.01
+			m.F[1] = float64(binary.BigEndian.Uint16(results[(0x1a+1)*2,(0x1a+1)*2+1]) * 0.01
+			m.F[2] = float64(binary.BigEndian.Uint16(results[(0x1a+2)*2,(0x1a+2)*2+1]) * 0.01
 
 		}
 	}
