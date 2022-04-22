@@ -14,10 +14,10 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
+var meter = gaoyan.METER{Name: "yc1", ConfigSent: false}
+
 func do_job(c mqtt.Client) {
 	log.Println("loop")
-
-	meter := new(gaoyan.METER)
 
 	json_string, err := meter.Read("192.168.0.189", 8899)
 
@@ -27,6 +27,21 @@ func do_job(c mqtt.Client) {
 
 		log.Printf("got: %s", json_string)
 	}
+
+	go func() {
+		json_string, err := meter.Read("192.168.0.189", 8899)
+		if err != nil {
+			log.Printf("Read error: %s", err)
+		} else {
+			if false == meter.ConfigSent {
+				meter.PublishConfig(c)
+				meter.ConfigSent = true
+			}
+			//log.Print(json_string)
+			meter.PublishData(c, json_string)
+			//log.Printf("%s", rigs[i].ID)
+		}
+	}()
 
 }
 
