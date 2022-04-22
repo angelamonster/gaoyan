@@ -3,7 +3,6 @@ package gaoyan
 import (
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -82,7 +81,7 @@ func (m METER) Read(host string, port int) (string, error) {
 	handler := modbus.NewTCPClientHandler(fmt.Sprintf("%s:%d", host, port))
 	handler.Timeout = 10 * time.Second
 	handler.SlaveId = 0x01
-	handler.Logger = log.New(os.Stdout, "test: ", log.LstdFlags)
+	//handler.Logger = log.New(os.Stdout, "test: ", log.LstdFlags)
 	// Connect manually so that multiple requests are handled in one connection session
 	err := handler.Connect()
 	defer handler.Close()
