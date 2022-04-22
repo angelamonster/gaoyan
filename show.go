@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -15,7 +16,8 @@ import (
 	"syscall"
 	"time"
 
-	claymore "./rpcclaymore"
+	"./gaoyan"
+	"./rpcclaymore"
 
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
@@ -24,23 +26,14 @@ import (
 )
 
 //{"P":"2588","PA":"755","PB":"836","PC":"1001","AP":"2694","APA":"778","APB":"865","APC":"1050","VA":"225.1","VB":"223.1","VC":"224.1","FA":"49.99","FB":"49.99","FC":"49.99","E":"27759.83"}
-type METER struct {
-	P         int     `json:"P"`
-	PA        int     `json:"PA"`
-	PB        int     `json:"PB"`
-	PC        int     `json:"PC"`
-	AP        int     `json:"AP"`
-	APA       int     `json:"APA"`
-	APB       int     `json:"APB"`
-	APC       int     `json:"APC"`
-	VA        float64 `json:"VA"`
-	VB        float64 `json:"VB"`
-	VC        float64 `json:"VC"`
-	FA        float64 `json:"FA"`
-	FB        float64 `json:"FB"`
-	FC        float64 `json:"FC"`
-	E         float64 `json:"E"`
-	Timestamp int64   `json:"timestamp"`
+
+type DATA struct {
+	E_BOY float64 `json:"e_boy"`
+	E_BOM float64 `json:"e_bom"`
+	E_BOD float64 `json:"e_bod"`
+	S_BOY float64 `json:"s_boy"`
+	S_BOM float64 `json:"s_bom"`
+	S_BOD float64 `json:"s_bod"`
 }
 
 //{"P":3188,"PSUNGROW":2228.0,"PGINLONG":960.0,"E":26048.0 ,"ESUNGROW":24139.0 ,"EGINLONG":1909.0 ,"VA":234.4 ,"VB":234.4 ,"VC":235.0,"F":50.03,"timestamp":1649911033}
@@ -58,13 +51,49 @@ type SOLAR struct {
 	Timestamp int64   `json:"timestamp"`
 }
 
-var w0004 claymore.MinerInfo
-var w0005 claymore.MinerInfo
-var w0007 claymore.MinerInfo
+var w0004 rpcclaymore.MinerInfo
+var w0005 rpcclaymore.MinerInfo
+var w0007 rpcclaymore.MinerInfo
 
-var meter METER
+var meter gaoyan.METERInfo
 
 var solar SOLAR
+
+var data DATA = DATA{}
+
+func load_data() {
+	jsonFile, err := os.Open("json/data.json")
+	if err != nil {
+		log.Println("error opening json file")
+		return
+	}
+	defer jsonFile.Close()
+
+	jsonData, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		log.Println("error reading json file")
+		return
+	}
+	//var data DATA
+	json.Unmarshal(jsonData, &data)
+	log.Println(data)
+	//return &data
+}
+
+func dump_data() {
+
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		log.Println("error marshal json file")
+		return
+	}
+	err = ioutil.WriteFile("json/data.json", jsonData, 0777)
+	if err != nil {
+		log.Println("error writing json file")
+		return
+	}
+
+}
 
 //var f mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 func onMessageReceived(client mqtt.Client, msg mqtt.Message) {
@@ -306,9 +335,9 @@ func paint_console() {
 
 	} else {
 		//fmt.Printf("%s : %ds ago \n", "meter", delay)
-		pa = strconv.Itoa(meter.PA)
-		pb = strconv.Itoa(meter.PB) // + " (" + strconv.Itoa(int(0-delay)) + "s)"
-		pc = strconv.Itoa(meter.PC) // + " (" + strconv.Itoa(int(0-delay)) + "s)"
+		pa = strconv.Itoa(int(meter.PA))
+		pb = strconv.Itoa(int(meter.PB)) // + " (" + strconv.Itoa(int(0-delay)) + "s)"
+		pc = strconv.Itoa(int(meter.PC)) // + " (" + strconv.Itoa(int(0-delay)) + "s)"
 		//delay_meter =  strconv.Itoa(int(delay))
 	}
 
@@ -399,9 +428,30 @@ func paint_console() {
 			log += strconv.Itoa(v)
 		}
 	}
-	fmt.Println(log)
+	//fmt.Println(log)
 	//fmt.Println("GOOD")
+	now := time.Now()
+
+	if now.Day() != last_time.Day() {
+		data.E_BOD = meter.E
+		data.S_BOD = solar.E
+		if now.Month() != last_time.Month() {
+			data.E_BOM = meter.E
+			data.S_BOM = solar.E
+
+			if now.Year() != last_time.Year() {
+				data.E_BOY = meter.E
+				data.S_BOY = solar.E
+
+			}
+		}
+		dump_data()
+	}
+
+	fmt.Printf("    Day  Month   Year\n%7.0f%7.0f%7.0f\n%7.0f%7.0f%7.0f\n%s", meter.E-data.E_BOD, meter.E-data.E_BOM, meter.E-data.E_BOY, solar.E-data.S_BOD, solar.E-data.S_BOM, solar.E-data.S_BOY, log)
 }
+
+var last_time time.Time
 
 func init_mqtt() mqtt.Client {
 	// for i := 0; i < 5; i++ {
@@ -465,6 +515,16 @@ func init_mqtt() mqtt.Client {
 	return mqtt.NewClient(connOpts)
 }
 
+func init() {
+
+	last_time = time.Now()
+	load_data()
+
+	for i := 0; i < 70; i++ {
+		queue = enqueue(queue, 0)
+	}
+}
+
 func main() {
 
 	ch := make(chan os.Signal, 1)
@@ -482,9 +542,6 @@ func main() {
 
 	mqtt_client := init_mqtt()
 
-	for i := 0; i < 150; i++ {
-		queue = enqueue(queue, 0)
-	}
 	//time.Sleep(30 * time.Second)
 	for !sig_exit {
 		//fmt.Printf("==================================\n")

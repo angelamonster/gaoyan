@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"flag"
 	"log"
 	"os"
@@ -20,7 +21,7 @@ func do_job(c mqtt.Client) {
 	log.Println("loop")
 
 	go func() {
-		json_string, err := meter.Read("192.168.0.189", 8899)
+		info, err := meter.Read("192.168.0.189", 8899)
 		if err != nil {
 			log.Printf("Read error: %s", err)
 		} else {
@@ -29,8 +30,14 @@ func do_job(c mqtt.Client) {
 				meter.ConfigSent = true
 			}
 			//log.Print(json_string)
-			meter.PublishData(c, json_string)
-			//log.Printf("%s", rigs[i].ID)
+
+			json_bytes, err := json.Marshal(info)
+			if err != nil {
+				log.Println(err)
+			} else {
+				meter.PublishData(c, string(json_bytes))
+				//log.Printf("%s", rigs[i].ID)
+			}
 		}
 	}()
 
@@ -114,7 +121,6 @@ func init_mqtt() mqtt.Client {
 
 func init() {
 	log.SetFlags(0)
-
 }
 
 func main() {

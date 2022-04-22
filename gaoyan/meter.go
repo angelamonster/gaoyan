@@ -7,10 +7,7 @@ import (
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	modbus "github.com/goburrow/modbus"
-
 	//modbusclient "github.com/dpapathanasiou/go-modbus"
-
-	"encoding/json"
 	//modbus "github.com/thinkgos/gomodbus"
 )
 
@@ -76,7 +73,7 @@ func byte32_to_float64(results []byte, pos int) float64 {
 
 }
 
-func (m METER) Read(host string, port int) (string, error) {
+func (m METER) Read(host string, port int) (*METERInfo, error) {
 	info := new(METERInfo)
 	handler := modbus.NewTCPClientHandler(fmt.Sprintf("%s:%d", host, port))
 	handler.Timeout = 10 * time.Second
@@ -88,7 +85,7 @@ func (m METER) Read(host string, port int) (string, error) {
 
 	if err != nil {
 		log.Println("connect failed, ", err)
-		return "", err
+		return nil, err
 	} else {
 		var length uint16 = 0x1E + 1
 		client := modbus.NewClient(handler)
@@ -97,7 +94,7 @@ func (m METER) Read(host string, port int) (string, error) {
 		// results, err = client.WriteMultipleCoils(5, 10, []byte{4, 3})
 		if err != nil {
 			log.Println("read failed, ", err)
-			return "", err
+			return nil, err
 		} else {
 			info.VA = byte16_to_float64(results, 0x00*2) * 0.1
 			info.VB = byte16_to_float64(results, 0x01*2) * 0.1
@@ -128,9 +125,7 @@ func (m METER) Read(host string, port int) (string, error) {
 		}
 	}
 
-	json_bytes, err := json.Marshal(info)
-
-	return string(json_bytes), nil
+	return info, nil
 
 }
 
