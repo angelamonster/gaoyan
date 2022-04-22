@@ -8,6 +8,7 @@ import (
 
 	modbus "github.com/goburrow/modbus"
 	//modbusclient "github.com/dpapathanasiou/go-modbus"
+	"encoding/binary"
 	"encoding/json"
 	//modbus "github.com/thinkgos/gomodbus"
 )
@@ -59,7 +60,7 @@ func (m METER) Read(host string, port int) (string, error) {
 	defer handler.Close()
 
 	if err != nil {
-		fmt.Println("connect failed, ", err)
+		log.Println("connect failed, ", err)
 		return "", err
 	} else {
 		var length uint16 = 0x1E + 1
@@ -68,11 +69,17 @@ func (m METER) Read(host string, port int) (string, error) {
 		// results, err = client.WriteMultipleRegisters(1, 2, []byte{0, 3, 0, 4})
 		// results, err = client.WriteMultipleCoils(5, 10, []byte{4, 3})
 		if err != nil {
-			fmt.Println("connect failed, ", err)
+			log.Println("read failed, ", err)
 			return "", err
 		} else {
 			log.Println("result =")
-			log.Println(results)
+			data := binary.BigEndian.Uint16(results[0:2])
+			fmt.Println(data)
+			data = binary.BigEndian.Uint16(results[2:4])
+			fmt.Println(data)
+			data = binary.BigEndian.Uint16(results[4:6])
+			fmt.Println(data)
+
 		}
 	}
 
