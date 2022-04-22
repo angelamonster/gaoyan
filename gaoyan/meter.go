@@ -8,7 +8,7 @@ import (
 
 	modbus "github.com/goburrow/modbus"
 	//modbusclient "github.com/dpapathanasiou/go-modbus"
-	"encoding/binary"
+
 	"encoding/json"
 	//modbus "github.com/thinkgos/gomodbus"
 )
@@ -34,18 +34,18 @@ type METER struct {
 	V       [3]float64
 }
 
-func build_value(results []byte, pos int) float64 {
+func byte16_to_float64(results []byte, pos int) float64 {
 
 	var high byte = results[pos]
 	var low byte = results[pos+1]
 
 	var v uint16 = uint16(high)<<8 + uint16(low)
-	var s uint32 = 0x10000
+	var s int32 = 0x10000
 
 	if v < 0x8000 {
 		return float64(v)
 	} else {
-		return float64(uint32(v) - s)
+		return float64(int32(v) - s)
 	}
 
 }
@@ -72,28 +72,51 @@ func (m METER) Read(host string, port int) (string, error) {
 			log.Println("read failed, ", err)
 			return "", err
 		} else {
-			m.V[0] = float64(binary.BigEndian.Uint16(results[0:0+2])) * 0.1
-			m.V[1] = float64(binary.BigEndian.Uint16(results[2:2+2])) * 0.1
-			m.V[2] = float64(binary.BigEndian.Uint16(results[4:4+2])) * 0.1
+			m.V[0] = byte16_to_float64(results, 0x00*2) * 0.1
+			m.V[1] = byte16_to_float64(results, 0x01*2) * 0.1
+			m.V[2] = byte16_to_float64(results, 0x02*2) * 0.1
 
-			m.I[0] = float64(binary.BigEndian.Uint16(results[(0x03+0)*2:(0x03+0)*2+2])) * 0.01
-			m.I[1] = float64(binary.BigEndian.Uint16(results[(0x03+1)*2:(0x03+1)*2+2])) * 0.01
-			m.I[2] = float64(binary.BigEndian.Uint16(results[(0x03+2)*2:(0x03+2)*2+2])) * 0.01
-			m.PTotal = float64(binary.BigEndian.Uint16(results[(0x07)*2 : (0x07)*2+2]))
-			m.P[0] = float64(binary.BigEndian.Uint16(results[(0x08+0)*2 : (0x08+0)*2+2]))
-			m.P[1] = float64(binary.BigEndian.Uint16(results[(0x08+1)*2 : (0x08+1)*2+2]))
-			m.P[2] = float64(binary.BigEndian.Uint16(results[(0x08+2)*2 : (0x08+2)*2+2]))
-			m.RPTotal = float64(binary.BigEndian.Uint16(results[(0x0b)*2 : (0x0b)*2+2]))
-			m.RP[0] = float64(binary.BigEndian.Uint16(results[(0x0c+0)*2 : (0x0c+0)*2+2]))
-			m.RP[1] = float64(binary.BigEndian.Uint16(results[(0x0c+1)*2 : (0x0c+1)*2+2]))
-			m.RP[2] = float64(binary.BigEndian.Uint16(results[(0x0c+2)*2 : (0x0c+2)*2+2]))
-			m.APTotal = float64(binary.BigEndian.Uint16(results[(0x0f)*2 : (0x0f)*2+2]))
-			m.AP[0] = float64(binary.BigEndian.Uint16(results[(0x10+0)*2 : (0x10+0)*2+2]))
-			m.AP[1] = float64(binary.BigEndian.Uint16(results[(0x10+1)*2 : (0x10+1)*2+2]))
-			m.AP[2] = float64(binary.BigEndian.Uint16(results[(0x10+2)*2 : (0x10+2)*2+2]))
-			m.F[0] = float64(binary.BigEndian.Uint16(results[(0x1a+0)*2:(0x1a+0)*2+2])) * 0.01
-			m.F[1] = float64(binary.BigEndian.Uint16(results[(0x1a+1)*2:(0x1a+1)*2+2])) * 0.01
-			m.F[2] = float64(binary.BigEndian.Uint16(results[(0x1a+2)*2:(0x1a+2)*2+2])) * 0.01
+			m.I[0] = byte16_to_float64(results, (0x03+0)*2) * 0.01
+			m.I[1] = byte16_to_float64(results, (0x03+1)*2) * 0.01
+			m.I[2] = byte16_to_float64(results, (0x03+2)*2) * 0.01
+			m.PTotal = byte16_to_float64(results, (0x07)*2)
+			m.P[0] = byte16_to_float64(results, (0x08+0)*2)
+			m.P[1] = byte16_to_float64(results, (0x08+1)*2)
+			m.P[2] = byte16_to_float64(results, (0x08+2)*2)
+			m.RPTotal = byte16_to_float64(results, (0x0b)*2)
+			m.RP[0] = byte16_to_float64(results, (0x0c+0)*2)
+			m.RP[1] = byte16_to_float64(results, (0x0c+1)*2)
+			m.RP[2] = byte16_to_float64(results, (0x0c+2)*2)
+			m.APTotal = byte16_to_float64(results, (0x0f)*2)
+			m.AP[0] = byte16_to_float64(results, (0x10+0)*2)
+			m.AP[1] = byte16_to_float64(results, (0x10+1)*2)
+			m.AP[2] = byte16_to_float64(results, (0x10+2)*2)
+			m.F[0] = byte16_to_float64(results, (0x1a+0)*2) * 0.01
+			m.F[1] = byte16_to_float64(results, (0x1a+1)*2) * 0.01
+			m.F[2] = byte16_to_float64(results, (0x1a+2)*2) * 0.01
+
+			// m.V[0] = float64(binary.BigEndian.Uint16(results[0:0+2])) * 0.1
+			// m.V[1] = float64(binary.BigEndian.Uint16(results[2:2+2])) * 0.1
+			// m.V[2] = float64(binary.BigEndian.Uint16(results[4:4+2])) * 0.1
+
+			// m.I[0] = float64(binary.BigEndian.Uint16(results[(0x03+0)*2:(0x03+0)*2+2])) * 0.01
+			// m.I[1] = float64(binary.BigEndian.Uint16(results[(0x03+1)*2:(0x03+1)*2+2])) * 0.01
+			// m.I[2] = float64(binary.BigEndian.Uint16(results[(0x03+2)*2:(0x03+2)*2+2])) * 0.01
+			// m.PTotal = float64(binary.BigEndian.Uint16(results[(0x07)*2 : (0x07)*2+2]))
+			// m.P[0] = float64(binary.BigEndian.Uint16(results[(0x08+0)*2 : (0x08+0)*2+2]))
+			// m.P[1] = float64(binary.BigEndian.Uint16(results[(0x08+1)*2 : (0x08+1)*2+2]))
+			// m.P[2] = float64(binary.BigEndian.Uint16(results[(0x08+2)*2 : (0x08+2)*2+2]))
+			// m.RPTotal = float64(binary.BigEndian.Uint16(results[(0x0b)*2 : (0x0b)*2+2]))
+			// m.RP[0] = float64(binary.BigEndian.Uint16(results[(0x0c+0)*2 : (0x0c+0)*2+2]))
+			// m.RP[1] = float64(binary.BigEndian.Uint16(results[(0x0c+1)*2 : (0x0c+1)*2+2]))
+			// m.RP[2] = float64(binary.BigEndian.Uint16(results[(0x0c+2)*2 : (0x0c+2)*2+2]))
+			// m.APTotal = float64(binary.BigEndian.Uint16(results[(0x0f)*2 : (0x0f)*2+2]))
+			// m.AP[0] = float64(binary.BigEndian.Uint16(results[(0x10+0)*2 : (0x10+0)*2+2]))
+			// m.AP[1] = float64(binary.BigEndian.Uint16(results[(0x10+1)*2 : (0x10+1)*2+2]))
+			// m.AP[2] = float64(binary.BigEndian.Uint16(results[(0x10+2)*2 : (0x10+2)*2+2]))
+			// m.F[0] = float64(binary.BigEndian.Uint16(results[(0x1a+0)*2:(0x1a+0)*2+2])) * 0.01
+			// m.F[1] = float64(binary.BigEndian.Uint16(results[(0x1a+1)*2:(0x1a+1)*2+2])) * 0.01
+			// m.F[2] = float64(binary.BigEndian.Uint16(results[(0x1a+2)*2:(0x1a+2)*2+2])) * 0.01
 
 		}
 	}
