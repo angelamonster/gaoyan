@@ -51,7 +51,7 @@ func byte32_to_float64(results []byte, pos int) float64 {
 	var v uint32 = uint32(results[pos])<<24 + uint32(results[pos+1])<<16 + uint32(results[pos+2])<<8 + uint32(results[pos+3])
 	var s int64 = 0x100000000
 
-	if v < 0x8000 {
+	if v < 0x80000000 {
 		return float64(v)
 	} else {
 		return float64(int64(v) - s)
