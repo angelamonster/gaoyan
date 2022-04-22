@@ -47,7 +47,7 @@ func build_value(results []byte, pos int) float64 {
 }
 
 func (m METER) Read(host string, port int) (json_string string, err error) {
-	p := modbus.NewTCPClientProvider(fmt.Sprintf("%s:%d", host, port), modbus.WithEnableLogger())
+	p := modbus.NewTCPClientProvider(fmt.Sprintf("%s:%d", host, port), modbus.WithTCPTimeout(3000)) //modbus.WithEnableLogger()|
 	client := modbus.NewClient(p)
 	cerr := client.Connect()
 	if cerr != nil {
