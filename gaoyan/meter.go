@@ -57,7 +57,7 @@ func (m METER) Read(host string, port int) (json_string string, err error) {
 		fmt.Println("starting")
 
 		var length uint16 = 0x1E + 1
-		results, err := client.ReadInputRegisters(0xFF, 0x00, length)
+		results, err := client.ReadInputRegisters(0x01, 0x00, length)
 		//_, err := client.ReadCoils(1, 0, 10)
 		if err != nil {
 			fmt.Println(err.Error())
