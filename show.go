@@ -15,10 +15,11 @@ import (
 	"syscall"
 	"time"
 
+	claymore "./rpcclaymore"
+
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
 
-	claymore "./rpcclaymore"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
@@ -353,8 +354,8 @@ func paint_console() {
 	t.AppendSeparator()
 	t.AppendRow(table.Row{"Total", (w0004.MainCrypto.HashRate + w0005.MainCrypto.HashRate + w0007.MainCrypto.HashRate) / 1000000, "", meter.PA + meter.PB + meter.PC})
 	t.AppendSeparator()
-	t.AppendRow(table.Row{"G", "", "", psolar_ginlong})
-	t.AppendRow(table.Row{"S", "", "", psolar_sungrow})
+	t.AppendRow(table.Row{"GLONG", "", "", psolar_ginlong})
+	t.AppendRow(table.Row{"SUN", "", "", psolar_sungrow})
 	t.AppendSeparator()
 	t.AppendRow(table.Row{"Total", "", esolar, psolar})
 
