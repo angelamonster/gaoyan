@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	modbus "github.com/thinkgos/gomodbus/"
+	modbus "github.com/thinkgos/gomodbus"
 )
 
 //"encoding/json"
