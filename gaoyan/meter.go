@@ -1,12 +1,15 @@
 package gaoyan
 
 import (
-	//modbus "github.com/goburrow/modbus"
+	"fmt"
+	"log"
+	"os"
+	"time"
+
+	modbus "github.com/goburrow/modbus"
 	//modbusclient "github.com/dpapathanasiou/go-modbus"
 	"encoding/json"
-	"fmt"
-
-	modbus "github.com/thinkgos/gomodbus"
+	//modbus "github.com/thinkgos/gomodbus"
 )
 
 //"encoding/json"
@@ -46,54 +49,79 @@ func build_value(results []byte, pos int) float64 {
 
 }
 
-func (m METER) Read(host string, port int) (json_string string, err error) {
-	p := modbus.NewTCPClientProvider(fmt.Sprintf("%s:%d", host, port), modbus.WithTCPTimeout(5000), modbus.WithEnableLogger()) //|
-	client := modbus.NewClient(p)
-	cerr := client.Connect()
-	if cerr != nil {
-		fmt.Println("connect failed, ", cerr)
+func (m METER) Read(host string, port int) (string, error) {
+	handler := modbus.NewTCPClientHandler(fmt.Sprintf("%s:%d", host, port))
+	handler.Timeout = 10 * time.Second
+	handler.SlaveId = 0x01
+	handler.Logger = log.New(os.Stdout, "test: ", log.LstdFlags)
+	// Connect manually so that multiple requests are handled in one connection session
+	err := handler.Connect()
+	defer handler.Close()
+
+	if err != nil {
+		fmt.Println("connect failed, ", err)
 		return "", err
 	} else {
-		fmt.Println("starting")
-
-		//var tx modbus.ProtocolDataUnit =
-
-		var length uint16 = 0x1E + 1
-		//results, err := client.Send()(0x01, 0x00, length)
-		results, err := client.ReadInputRegisters(0x01, 0x00, length)
-		//_, err := client.ReadCoils(1, 0, 10)
+		client := modbus.NewClient(handler)
+		results, err := client.ReadDiscreteInputs(15, 2)
+		// results, err = client.WriteMultipleRegisters(1, 2, []byte{0, 3, 0, 4})
+		// results, err = client.WriteMultipleCoils(5, 10, []byte{4, 3})
 		if err != nil {
-			fmt.Println(err.Error())
+			fmt.Println("connect failed, ", err)
 			return "", err
 		} else {
-			m.V[0] = float64(results[0]) * 0.1
-			m.V[1] = float64(results[1]) * 0.1
-			m.V[2] = float64(results[2]) * 0.1
-			m.I[0] = float64(results[0x03+0]) * 0.01
-			m.I[1] = float64(results[0x03+1]) * 0.01
-			m.I[2] = float64(results[0x03+2]) * 0.01
-			m.I[0] = float64(results[0x03+0]) * 0.01
-			m.I[1] = float64(results[0x03+1]) * 0.01
-			m.I[2] = float64(results[0x03+2]) * 0.01
-			m.PTotal = float64(results[0x07])
-			m.P[0] = float64(results[0x08+0])
-			m.P[1] = float64(results[0x08+1])
-			m.P[2] = float64(results[0x08+2])
-			m.RPTotal = float64(results[0x0b])
-			m.RP[0] = float64(results[0x0c+0])
-			m.RP[1] = float64(results[0x0c+1])
-			m.RP[2] = float64(results[0x0c+2])
-			m.APTotal = float64(results[0x0f])
-			m.AP[0] = float64(results[0x10+0])
-			m.AP[1] = float64(results[0x10+1])
-			m.AP[2] = float64(results[0x10+2])
-			m.F[0] = float64(results[0x1a+0]) * 0.01
-			m.F[1] = float64(results[0x1a+1]) * 0.01
-			m.F[2] = float64(results[0x1a+2]) * 0.01
+			log.Println("result =")
+			log.Println(results)
 		}
-
 	}
-	defer client.Close()
+
+	// p := modbus.NewTCPClientProvider(fmt.Sprintf("%s:%d", host, port), modbus.WithTCPTimeout(5000), modbus.WithEnableLogger()) //|
+	// client := modbus.NewClient(p)
+	// cerr := client.Connect()
+	// if cerr != nil {
+	// 	fmt.Println("connect failed, ", cerr)
+	// 	return "", err
+	// } else {
+	// 	fmt.Println("starting")
+
+	// 	//var tx modbus.ProtocolDataUnit =
+
+	// 	var length uint16 = 0x1E + 1
+	// 	//results, err := client.Send()(0x01, 0x00, length)
+	// 	results, err := client.ReadInputRegisters(0x01, 0x00, length)
+	// 	//_, err := client.ReadCoils(1, 0, 10)
+	// 	if err != nil {
+	// 		fmt.Println(err.Error())
+	// 		return "", err
+	// 	} else {
+	// 		m.V[0] = float64(results[0]) * 0.1
+	// 		m.V[1] = float64(results[1]) * 0.1
+	// 		m.V[2] = float64(results[2]) * 0.1
+	// 		m.I[0] = float64(results[0x03+0]) * 0.01
+	// 		m.I[1] = float64(results[0x03+1]) * 0.01
+	// 		m.I[2] = float64(results[0x03+2]) * 0.01
+	// 		m.I[0] = float64(results[0x03+0]) * 0.01
+	// 		m.I[1] = float64(results[0x03+1]) * 0.01
+	// 		m.I[2] = float64(results[0x03+2]) * 0.01
+	// 		m.PTotal = float64(results[0x07])
+	// 		m.P[0] = float64(results[0x08+0])
+	// 		m.P[1] = float64(results[0x08+1])
+	// 		m.P[2] = float64(results[0x08+2])
+	// 		m.RPTotal = float64(results[0x0b])
+	// 		m.RP[0] = float64(results[0x0c+0])
+	// 		m.RP[1] = float64(results[0x0c+1])
+	// 		m.RP[2] = float64(results[0x0c+2])
+	// 		m.APTotal = float64(results[0x0f])
+	// 		m.AP[0] = float64(results[0x10+0])
+	// 		m.AP[1] = float64(results[0x10+1])
+	// 		m.AP[2] = float64(results[0x10+2])
+	// 		m.F[0] = float64(results[0x1a+0]) * 0.01
+	// 		m.F[1] = float64(results[0x1a+1]) * 0.01
+	// 		m.F[2] = float64(results[0x1a+2]) * 0.01
+	// 	}
+
+	// }
+	// defer client.Close()
 
 	//	fmt.Printf("ReadDiscreteInputs %#v\r\n", results)
 	json_bytes, err := json.Marshal(m)
