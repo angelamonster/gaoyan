@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	claymore "github.com/ivanbeldad/rpc-claymore"
@@ -76,6 +77,7 @@ func (rig RIG) GetStat() (string, error) {
 	mi.AltPool = PoolInfo{Address: info.AltPool.Address, Switches: info.AltPool.Switches}
 	mi.Version = info.Version
 	mi.UpTime = info.UpTime
+	mi.Timestamp = time.Now().Unix()
 
 	json_bytes, err := json.Marshal(mi)
 	if err != nil {
