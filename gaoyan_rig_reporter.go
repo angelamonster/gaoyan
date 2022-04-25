@@ -37,7 +37,7 @@ func do_job(c mqtt.Client) {
 				}
 				//log.Print(json_string)
 				rigs[i].PublishData(c, json_string)
-				log.Printf("%s", rigs[i].ID)
+				log.Printf("%s\n", rigs[i].ID)
 			}
 		}(i)
 
