@@ -9,6 +9,39 @@ import (
 	claymore "github.com/ivanbeldad/rpc-claymore"
 )
 
+type Crypto struct {
+	HashRate       int `json:"hashrate"`
+	Shares         int `json:"shares"`
+	RejectedShares int `json:"rejected"`
+	InvalidShares  int `json:"invalid"`
+}
+
+type PoolInfo struct {
+	Address  string `json:"adress"`
+	Switches int    `json:"switches"`
+}
+
+// GPU Information about each concrete GPU
+type GPU struct {
+	HashRate    int `json:"hashrate"`
+	AltHashRate int `json:"althashrate"`
+	Temperature int `json:"temperature"`
+	FanSpeed    int `json:"fanspeed"`
+}
+
+// MinerInfo Information about the miner
+type MinerInfo struct {
+	Version    string   `json:"version"`
+	UpTime     int      `json:"uptime"`
+	MainCrypto Crypto   `json:"maincrypto"`
+	AltCrypto  Crypto   `json:"altcrypto"`
+	MainPool   PoolInfo `json:"mainpool"`
+	AltPool    PoolInfo `json:"altpool"`
+	GPUS       []GPU
+	Timestamp  int64 `json:"timestamp"`
+	HighTemp   int   `json:"hightemperature"`
+}
+
 type RIG struct {
 	ID           string
 	IP           string
@@ -28,7 +61,23 @@ func (rig RIG) GetStat() (string, error) {
 		return "", err
 	}
 
-	json_bytes, err := json.Marshal(info)
+	var mi = new(MinerInfo)
+	mi.HighTemp = 0
+	for _, g := range info.GPUS {
+		var gpu GPU = GPU{HashRate: g.HashRate, AltHashRate: g.AltHashRate, Temperature: g.Temperature, FanSpeed: g.FanSpeed}
+		mi.GPUS = append(mi.GPUS, gpu)
+		if g.Temperature > mi.HighTemp {
+			mi.HighTemp = g.Temperature
+		}
+	}
+	mi.MainCrypto = Crypto{HashRate: info.MainCrypto.HashRate, Shares: info.MainCrypto.Shares, RejectedShares: info.MainCrypto.RejectedShares, InvalidShares: info.MainCrypto.InvalidShares}
+	mi.AltCrypto = Crypto{HashRate: info.AltCrypto.HashRate, Shares: info.AltCrypto.Shares, RejectedShares: info.AltCrypto.RejectedShares, InvalidShares: info.AltCrypto.InvalidShares}
+	mi.MainPool = PoolInfo{Address: info.MainPool.Address, Switches: info.MainPool.Switches}
+	mi.AltPool = PoolInfo{Address: info.AltPool.Address, Switches: info.AltPool.Switches}
+	mi.Version = info.Version
+	mi.UpTime = info.UpTime
+
+	json_bytes, err := json.Marshal(mi)
 	if err != nil {
 		log.Println(err)
 		return "", err

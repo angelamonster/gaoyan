@@ -20,14 +20,15 @@ import (
 var meter = gaoyan.METER{Name: "yc1", ConfigSent: false}
 
 func do_job(c mqtt.Client) {
-	log.Println("loop")
+	//log.Println("loop")
 
 	go func() {
 		info, err := meter.Read("192.168.0.189", 8899)
 		if err != nil {
-			log.Printf("Read error: %s", err)
+			log.Printf("Read error: %s\n", err)
 		} else {
 			if false == meter.ConfigSent {
+				log.Println("Publish Config")
 				meter.PublishConfig(c)
 				meter.ConfigSent = true
 			}
@@ -38,7 +39,7 @@ func do_job(c mqtt.Client) {
 				log.Println(err)
 			} else {
 				meter.PublishData(c, string(json_bytes))
-				//log.Printf("%s", rigs[i].ID)
+				log.Printf("P:%f\n", info.P)
 			}
 		}
 	}()

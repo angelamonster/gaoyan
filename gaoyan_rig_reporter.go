@@ -22,7 +22,7 @@ var rig_w0007 = gaoyan.RIG{ID: "w0007", IP: "192.168.0.207", Username: "user", P
 var rigs = [3]gaoyan.RIG{rig_w0004, rig_w0005, rig_w0007}
 
 func do_job(c mqtt.Client) {
-	log.Println("loop")
+	//log.Println("loop")
 
 	for i, _ := range rigs {
 		go func(i int) {
@@ -31,6 +31,7 @@ func do_job(c mqtt.Client) {
 				log.Println(err)
 			} else {
 				if false == rigs[i].ConfigSent {
+					log.Println("Publish Config")
 					rigs[i].PublishConfig(c, json_string)
 					rigs[i].ConfigSent = true
 				}
