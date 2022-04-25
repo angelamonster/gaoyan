@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"log"
 
-	claymore "../rpcclaymore"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
+	claymore "github.com/ivanbeldad/rpc-claymore"
 )
 
 type RIG struct {

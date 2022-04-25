@@ -1,3 +1,5 @@
+//go:build ignore
+
 package main
 
 import (
@@ -17,13 +19,45 @@ import (
 	"time"
 
 	"./gaoyan"
-	"./rpcclaymore"
 
 	"github.com/jedib0t/go-pretty/table"
 	"github.com/jedib0t/go-pretty/text"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
+
+type Crypto struct {
+	HashRate       int `json:"hashrate"`
+	Shares         int `json:"shares"`
+	RejectedShares int `json:"rejected"`
+	InvalidShares  int `json:"invalid"`
+}
+
+type PoolInfo struct {
+	Address  string `json:"adress"`
+	Switches int    `json:"switches"`
+}
+
+// GPU Information about each concrete GPU
+type GPU struct {
+	HashRate    int `json:"hashrate"`
+	AltHashRate int `json:"althashrate"`
+	Temperature int `json:"temperature"`
+	FanSpeed    int `json:"fanspeed"`
+}
+
+// MinerInfo Information about the miner
+type MinerInfo struct {
+	Version    string   `json:"version"`
+	UpTime     int      `json:"uptime"`
+	MainCrypto Crypto   `json:"maincrypto"`
+	AltCrypto  Crypto   `json:"altcrypto"`
+	MainPool   PoolInfo `json:"mainpool"`
+	AltPool    PoolInfo `json:"altpool"`
+	Timestamp  int64    `json:"timestamp"`
+	HighTemp   int      `json:"hightemperature"`
+	GPUS       []GPU
+}
 
 //{"P":"2588","PA":"755","PB":"836","PC":"1001","AP":"2694","APA":"778","APB":"865","APC":"1050","VA":"225.1","VB":"223.1","VC":"224.1","FA":"49.99","FB":"49.99","FC":"49.99","E":"27759.83"}
 
@@ -51,9 +85,9 @@ type SOLAR struct {
 	Timestamp int64   `json:"timestamp"`
 }
 
-var w0004 rpcclaymore.MinerInfo
-var w0005 rpcclaymore.MinerInfo
-var w0007 rpcclaymore.MinerInfo
+var w0004 MinerInfo
+var w0005 MinerInfo
+var w0007 MinerInfo
 
 var meter gaoyan.METERInfo
 
