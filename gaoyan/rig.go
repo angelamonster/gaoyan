@@ -65,14 +65,14 @@ func (rig RIG) GetStat() (string, error) {
 	var mi = new(MinerInfo)
 	mi.HighTemp = 0
 	for _, g := range info.GPUS {
-		var gpu GPU = GPU{HashRate: g.HashRate, AltHashRate: g.AltHashRate, Temperature: g.Temperature, FanSpeed: g.FanSpeed}
+		var gpu GPU = GPU{HashRate: g.HashRate * 1000, AltHashRate: g.AltHashRate * 1000, Temperature: g.Temperature, FanSpeed: g.FanSpeed}
 		mi.GPUS = append(mi.GPUS, gpu)
 		if g.Temperature > mi.HighTemp {
 			mi.HighTemp = g.Temperature
 		}
 	}
-	mi.MainCrypto = Crypto{HashRate: info.MainCrypto.HashRate, Shares: info.MainCrypto.Shares, RejectedShares: info.MainCrypto.RejectedShares, InvalidShares: info.MainCrypto.InvalidShares}
-	mi.AltCrypto = Crypto{HashRate: info.AltCrypto.HashRate, Shares: info.AltCrypto.Shares, RejectedShares: info.AltCrypto.RejectedShares, InvalidShares: info.AltCrypto.InvalidShares}
+	mi.MainCrypto = Crypto{HashRate: info.MainCrypto.HashRate * 1000, Shares: info.MainCrypto.Shares, RejectedShares: info.MainCrypto.RejectedShares, InvalidShares: info.MainCrypto.InvalidShares}
+	mi.AltCrypto = Crypto{HashRate: info.AltCrypto.HashRate * 1000, Shares: info.AltCrypto.Shares, RejectedShares: info.AltCrypto.RejectedShares, InvalidShares: info.AltCrypto.InvalidShares}
 	mi.MainPool = PoolInfo{Address: info.MainPool.Address, Switches: info.MainPool.Switches}
 	mi.AltPool = PoolInfo{Address: info.AltPool.Address, Switches: info.AltPool.Switches}
 	mi.Version = info.Version
@@ -114,19 +114,22 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 	//     mqtt.client.publish(topic_totalhash_config, payload=totalhash_config, qos=2,retain=True)     # 发送消息
 	config_topics := []string{fmt.Sprintf("haworkshopyc1/sensor/%s/totalhash/config", rig.ID),
 		fmt.Sprintf("haworkshopyc1/sensor/%s/hightemperature/config", rig.ID)}
-	config_payloads := []string{fmt.Sprintf("{\"name\": \"%s-totalhash\", \"unique_id\": \"%s-totalhash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"B\",\"value_template\": \"{{ value_json.maincrypto.hashrate }}\" }", rig.ID, rig.ID, topic_state),
+
+	config_payloads := []string{fmt.Sprintf("{\"name\": \"%s-totalhash\", \"unique_id\": \"%s-totalhash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"H\",\"value_template\": \"{{ value_json.maincrypto.hashrate }}\" }", rig.ID, rig.ID, topic_state),
 		fmt.Sprintf("{\"device_class\": \"temperature\", \"name\": \"%s-hightemperature\", \"unique_id\": \"%s-hightemperature\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"°C\",\"value_template\": \"{{ value_json.hightemperature }}\" }", rig.ID, rig.ID, topic_state)}
 
 	for i, _ := range mi.GPUS {
 		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/temp/config", rig.ID, i))
 		config_payloads = append(config_payloads, fmt.Sprintf("{\"device_class\": \"temperature\", \"name\": \"%s-%d-temp\", \"unique_id\": \"%s-%d-temp\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"°C\" ,  \"value_template\": \"{{ value_json.GPUS[%d].temperature }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
 
-		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/hash/config", rig.ID, i))
-		config_payloads = append(config_payloads, fmt.Sprintf("{\"name\": \"%s-%d-hash\", \"unique_id\": \"%s-%d-hash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"B\" ,  \"value_template\": \"{{ value_json.GPUS[%d].hashrate }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
-
 		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/fan/config", rig.ID, i))
 		config_payloads = append(config_payloads, fmt.Sprintf("{\"name\":  \"%s-%d-fan\", \"unique_id\": \"%s-%d-fan\",  \"state_topic\": \"%s\",   \"unit_of_measurement\": \"%%\" ,  \"value_template\": \"{{ value_json.GPUS[%d].fanspeed }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
 
+		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/hash/config", rig.ID, i))
+		config_payloads = append(config_payloads, fmt.Sprintf("{\"name\": \"%s-%d-hash\", \"unique_id\": \"%s-%d-hash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"H\" ,  \"value_template\": \"{{ value_json.GPUS[%d].hashrate }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
+
+		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/althash/config", rig.ID, i))
+		config_payloads = append(config_payloads, fmt.Sprintf("{\"name\": \"%s-%d-althash\", \"unique_id\": \"%s-%d-althash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"H\" ,  \"value_template\": \"{{ value_json.GPUS[%d].althashrate }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
 	}
 
 	for i, topic := range config_topics {
