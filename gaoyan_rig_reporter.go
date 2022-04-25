@@ -4,6 +4,7 @@ package main
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"flag"
 	"log"
 	"os"
@@ -26,18 +27,24 @@ func do_job(c mqtt.Client) {
 
 	for i, _ := range rigs {
 		go func(i int) {
-			json_string, err := rigs[i].GetStat()
+			mi, err := rigs[i].GetStat()
 			if err != nil {
 				log.Println(err)
 			} else {
-				if false == rigs[i].ConfigSent {
-					log.Println("Publish Config")
-					rigs[i].PublishConfig(c, json_string)
-					rigs[i].ConfigSent = true
+				json_bytes, err := json.Marshal(mi)
+				if err != nil {
+					log.Println(err)
+				} else {
+					json_string := string(json_bytes)
+					if false == rigs[i].ConfigSent {
+						log.Println("Publish Config")
+						rigs[i].PublishConfig(c, json_string)
+						rigs[i].ConfigSent = true
+					}
+					//log.Print(json_string)
+					rigs[i].PublishData(c, json_string)
+					log.Printf("%s - %d - %d\n", rigs[i].ID, mi.MainCrypto.HashRate, mi.AltCrypto.HashRate)
 				}
-				//log.Print(json_string)
-				rigs[i].PublishData(c, json_string)
-				log.Printf("%s\n", rigs[i].ID)
 			}
 		}(i)
 

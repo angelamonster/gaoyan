@@ -52,7 +52,7 @@ type RIG struct {
 	ConfigSent   bool
 }
 
-func (rig RIG) GetStat() (string, error) {
+func (rig RIG) GetStat() (MinerInfo, error) {
 
 	miner := claymore.Miner{Address: fmt.Sprintf("%s:%d", rig.ID, rig.ClaymorePort)}
 	info, err := miner.GetInfo()
@@ -79,13 +79,9 @@ func (rig RIG) GetStat() (string, error) {
 	mi.UpTime = info.UpTime
 	mi.Timestamp = time.Now().Unix()
 
-	json_bytes, err := json.Marshal(mi)
-	if err != nil {
-		log.Println(err)
-		return "", err
-	}
+	return mi, nil
 
-	return string(json_bytes), nil
+	//return string(json_bytes), nil
 	//return "okok test", nil
 }
 
