@@ -52,14 +52,14 @@ type RIG struct {
 	ConfigSent   bool
 }
 
-func (rig RIG) GetStat() (MinerInfo, error) {
+func (rig RIG) GetStat() (*MinerInfo, error) {
 
 	miner := claymore.Miner{Address: fmt.Sprintf("%s:%d", rig.ID, rig.ClaymorePort)}
 	info, err := miner.GetInfo()
 
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return nil, err
 	}
 
 	var mi = new(MinerInfo)
