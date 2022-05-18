@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
@@ -66,12 +67,12 @@ type HIVE struct {
 }
 
 type HIVEInfo struct {
-	OnlineWorkerCount string  `json:"onlineWorkerCount"`
-	Hashrate          string  `json:"hashrate"`
-	ReportedHashrate  string  `json:"reportedHashrate"`
-	TotalPaid         float64 `json:"totalPaid"`
-	TotalUnpaid       float64 `json:"totalUnpaid"`
-	ExpectedReward24H float64 `json:"expectedReward24H"`
+	OnlineWorkerCount string  `json:"w"`
+	Hashrate          float64 `json:"hr"`
+	ReportedHashrate  float64 `json:"rhr"`
+	TotalPaid         float64 `json:"tp"`
+	TotalUnpaid       float64 `json:"tup"`
+	ExpectedReward24H float64 `json:"e24h"`
 }
 
 func (hive HIVE) Read() (*HIVEInfo, error) {
@@ -117,8 +118,12 @@ func (hive HIVE) Read() (*HIVEInfo, error) {
 		} else {
 			log.Printf("online:%s\n", sta.OnlineWorkerCount)
 			info.OnlineWorkerCount = sta.OnlineWorkerCount
-			info.Hashrate = sta.Hashrate
-			info.ReportedHashrate = sta.ReportedHashrate
+			h, err := strconv.Atoi(sta.Hashrate)
+			rh, rerr := strconv.Atoi(sta.Hashrate)
+			if err != nil && rerr != nil {
+				info.Hashrate = float64(h / 1000000)
+				info.ReportedHashrate = float64(rh / 1000000)
+			}
 		}
 	}
 
@@ -140,7 +145,7 @@ func (hive HIVE) PublishConfig(c mqtt.Client) {
 	config_payloads := []string{}
 
 	cat := []string{"onlineWorkerCount", "hashrate", "reportedHashrate", "totalPaid", "totalUnpaid", "expectedReward24H"}
-	unit := []string{"U", "H", "H", "ETH", "ETH", "ETH"}
+	unit := []string{"U", "MH", "MH", "ETH", "ETH", "ETH"}
 	for i, c := range cat {
 		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/hive/%s/config", c))
 		config_payloads = append(config_payloads, fmt.Sprintf("{\"name\": \"hive-%s\", \"unique_id\": \"hive-%s\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"%s\" ,  \"value_template\": \"{{ value_json.%s }}\"  , \"expire_after\":600 }", c, c, topic_state, unit[i], c))
