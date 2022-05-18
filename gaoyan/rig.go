@@ -111,7 +111,7 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 	config_topics := []string{fmt.Sprintf("haworkshopyc1/sensor/%s/totalhash/config", rig.ID),
 		fmt.Sprintf("haworkshopyc1/sensor/%s/hightemperature/config", rig.ID)}
 
-	config_payloads := []string{fmt.Sprintf("{\"name\": \"%s-totalhash\", \"unique_id\": \"%s-totalhash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"H\",\"value_template\": \"{{ value_json.c.hr }}\" }", rig.ID, rig.ID, topic_state),
+	config_payloads := []string{fmt.Sprintf("{\"name\": \"%s-totalhash\", \"unique_id\": \"%s-totalhash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"MH\",\"value_template\": \"{{ value_json.c.hr }}\" }", rig.ID, rig.ID, topic_state),
 		fmt.Sprintf("{\"device_class\": \"temperature\", \"name\": \"%s-hightemperature\", \"unique_id\": \"%s-hightemperature\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"°C\",\"value_template\": \"{{ value_json.ht }}\" }", rig.ID, rig.ID, topic_state)}
 
 	for i, _ := range mi.GPUS {
@@ -122,10 +122,10 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 		config_payloads = append(config_payloads, fmt.Sprintf("{\"name\":  \"%s-%d-fan\", \"unique_id\": \"%s-%d-fan\",  \"state_topic\": \"%s\",   \"unit_of_measurement\": \"%%\" ,  \"value_template\": \"{{ value_json.GPUS[%d].fs }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
 
 		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/hash/config", rig.ID, i))
-		config_payloads = append(config_payloads, fmt.Sprintf("{\"name\": \"%s-%d-hash\", \"unique_id\": \"%s-%d-hash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"H\" ,  \"value_template\": \"{{ value_json.GPUS[%d].hr }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
+		config_payloads = append(config_payloads, fmt.Sprintf("{\"name\": \"%s-%d-hash\", \"unique_id\": \"%s-%d-hash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"MH\" ,  \"value_template\": \"{{ value_json.GPUS[%d].hr }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
 
-		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/althash/config", rig.ID, i))
-		config_payloads = append(config_payloads, fmt.Sprintf("{\"name\": \"%s-%d-althash\", \"unique_id\": \"%s-%d-althash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"H\" ,  \"value_template\": \"{{ value_json.GPUS[%d].ahr }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
+		//config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/althash/config", rig.ID, i))
+		//config_payloads = append(config_payloads, fmt.Sprintf("{\"name\": \"%s-%d-althash\", \"unique_id\": \"%s-%d-althash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"MH\" ,  \"value_template\": \"{{ value_json.GPUS[%d].ahr }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
 	}
 
 	for i, topic := range config_topics {
