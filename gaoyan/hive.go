@@ -144,7 +144,8 @@ func (hive HIVE) PublishConfig(c mqtt.Client) {
 	config_topics := []string{}
 	config_payloads := []string{}
 
-	cat := []string{"onlineWorkerCount", "hashrate", "reportedHashrate", "totalPaid", "totalUnpaid", "expectedReward24H"}
+	//cat := []string{"onlineWorkerCount", "hashrate", "reportedHashrate", "totalPaid", "totalUnpaid", "expectedReward24H"}
+	cat := []string{"w", "hr", "rhr", "tp", "tup", "e24h"}
 	unit := []string{"U", "MH", "MH", "ETH", "ETH", "ETH"}
 	for i, c := range cat {
 		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/hive/%s/config", c))
