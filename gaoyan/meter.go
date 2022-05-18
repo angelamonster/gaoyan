@@ -24,7 +24,7 @@ type METER struct {
 	ConfigSent bool
 }
 type METERInfo struct {
-	Timestamp int64   `json:"timestamp"`
+	Timestamp int64   `json:"ts"` //timestamp
 	VA        float64 `json:"va"`
 	VB        float64 `json:"vb"`
 	VC        float64 `json:"vc"`
