@@ -24,10 +24,10 @@ type PoolInfo struct {
 
 // GPU Information about each concrete GPU
 type GPU struct {
-	HashRate    int `json:"hr"`  // hashrate
-	AltHashRate int `json:"ahr"` // althashrate
-	Temperature int `json:"t"`   // temperature
-	FanSpeed    int `json:"fs"`  // fanspeed
+	HashRate    int `json:"hr"` // hashrate
+	AltHashRate int `json:"-"`  // althashrate
+	Temperature int `json:"t"`  // temperature
+	FanSpeed    int `json:"fs"` // fanspeed
 }
 
 // MinerInfo Information about the miner
