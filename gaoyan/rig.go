@@ -65,14 +65,14 @@ func (rig RIG) GetStat() (*MinerInfo, error) {
 	var mi = new(MinerInfo)
 	mi.HighTemp = 0
 	for _, g := range info.GPUS {
-		var gpu GPU = GPU{HashRate: g.HashRate * 1000, AltHashRate: g.AltHashRate * 1000, Temperature: g.Temperature, FanSpeed: g.FanSpeed}
+		var gpu GPU = GPU{HashRate: g.HashRate / 1000, AltHashRate: g.AltHashRate / 1000, Temperature: g.Temperature, FanSpeed: g.FanSpeed}
 		mi.GPUS = append(mi.GPUS, gpu)
 		if g.Temperature > mi.HighTemp {
 			mi.HighTemp = g.Temperature
 		}
 	}
-	mi.MainCrypto = Crypto{HashRate: info.MainCrypto.HashRate * 1000, Shares: info.MainCrypto.Shares, RejectedShares: info.MainCrypto.RejectedShares, InvalidShares: info.MainCrypto.InvalidShares}
-	mi.AltCrypto = Crypto{HashRate: info.AltCrypto.HashRate * 1000, Shares: info.AltCrypto.Shares, RejectedShares: info.AltCrypto.RejectedShares, InvalidShares: info.AltCrypto.InvalidShares}
+	mi.MainCrypto = Crypto{HashRate: info.MainCrypto.HashRate / 1000, Shares: info.MainCrypto.Shares, RejectedShares: info.MainCrypto.RejectedShares, InvalidShares: info.MainCrypto.InvalidShares}
+	mi.AltCrypto = Crypto{HashRate: info.AltCrypto.HashRate / 1000, Shares: info.AltCrypto.Shares, RejectedShares: info.AltCrypto.RejectedShares, InvalidShares: info.AltCrypto.InvalidShares}
 	mi.MainPool = PoolInfo{Address: info.MainPool.Address, Switches: info.MainPool.Switches}
 	mi.AltPool = PoolInfo{Address: info.AltPool.Address, Switches: info.AltPool.Switches}
 	mi.Version = info.Version
