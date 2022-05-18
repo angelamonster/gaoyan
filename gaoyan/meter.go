@@ -3,6 +3,7 @@ package gaoyan
 import (
 	"fmt"
 	"log"
+	"math"
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
@@ -96,12 +97,9 @@ func (m METER) Read(host string, port int) (*METERInfo, error) {
 			log.Println("read failed, ", err)
 			return nil, err
 		} else {
-			info.VA = byte16_to_float64(results, 0x00*2) * 0.1
-			info.VB = byte16_to_float64(results, 0x01*2) * 0.1
-			info.VC = byte16_to_float64(results, 0x02*2) * 0.1
-
-			log.Printf("va=%f,vb=%f,vc=%f", info.VA, info.VB, info.VC)
-
+			info.VA = math.Round(byte16_to_float64(results, 0x00*2)) / 10
+			info.VB = math.Round(byte16_to_float64(results, 0x01*2)) / 10
+			info.VC = math.Round(byte16_to_float64(results, 0x02*2)) / 10
 			info.IA = byte16_to_float64(results, (0x03+0)*2) * 0.01
 			info.IB = byte16_to_float64(results, (0x03+1)*2) * 0.01
 			info.IC = byte16_to_float64(results, (0x03+2)*2) * 0.01
