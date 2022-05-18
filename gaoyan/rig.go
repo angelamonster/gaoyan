@@ -32,15 +32,15 @@ type GPU struct {
 
 // MinerInfo Information about the miner
 type MinerInfo struct {
-	Version    string   `json:"cer"` //version
+	Version    string   `json:"ver"` //version
 	UpTime     int      `json:"ut"`  //uptime
 	MainCrypto Crypto   `json:"c"`   //maincrypto
 	AltCrypto  Crypto   `json:"ac"`  //altcrypto
 	MainPool   PoolInfo `json:"p"`   //mainpool
 	AltPool    PoolInfo `json:"ap"`  //altpool
-	GPUS       []GPU
-	Timestamp  int64 `json:"ts"` // timestamp
-	HighTemp   int   `json:"ht"` // hightemperature
+	GPUS       []GPU    `json:"g"`   //GPUS
+	Timestamp  int64    `json:"ts"`  // timestamp
+	HighTemp   int      `json:"ht"`  // hightemperature
 }
 
 type RIG struct {
