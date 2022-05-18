@@ -100,9 +100,9 @@ func (m METER) Read(host string, port int) (*METERInfo, error) {
 			info.VA = math.Round(byte16_to_float64(results, 0x00*2)) / 10
 			info.VB = math.Round(byte16_to_float64(results, 0x01*2)) / 10
 			info.VC = math.Round(byte16_to_float64(results, 0x02*2)) / 10
-			info.IA = byte16_to_float64(results, (0x03+0)*2) * 0.01
-			info.IB = byte16_to_float64(results, (0x03+1)*2) * 0.01
-			info.IC = byte16_to_float64(results, (0x03+2)*2) * 0.01
+			info.IA = byte16_to_float64(results, (0x03+0)*2) / 100
+			info.IB = byte16_to_float64(results, (0x03+1)*2) / 100
+			info.IC = byte16_to_float64(results, (0x03+2)*2) / 100
 			info.P = byte16_to_float64(results, (0x07)*2)
 			info.PA = byte16_to_float64(results, (0x08+0)*2)
 			info.PB = byte16_to_float64(results, (0x08+1)*2)
@@ -115,11 +115,11 @@ func (m METER) Read(host string, port int) (*METERInfo, error) {
 			info.SA = byte16_to_float64(results, (0x10+0)*2)
 			info.SB = byte16_to_float64(results, (0x10+1)*2)
 			info.SC = byte16_to_float64(results, (0x10+2)*2)
-			info.FA = byte16_to_float64(results, (0x1a+0)*2) * 0.01
-			info.FB = byte16_to_float64(results, (0x1a+1)*2) * 0.01
-			info.FC = byte16_to_float64(results, (0x1a+2)*2) * 0.01
+			info.FA = byte16_to_float64(results, (0x1a+0)*2) / 100
+			info.FB = byte16_to_float64(results, (0x1a+1)*2) / 100
+			info.FC = byte16_to_float64(results, (0x1a+2)*2) / 100
 
-			info.E = byte32_to_float64(results, (0x1D)*2) * 0.01
+			info.E = byte32_to_float64(results, (0x1D)*2) / 100
 
 			info.Timestamp = time.Now().Unix()
 		}
