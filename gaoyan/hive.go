@@ -121,8 +121,11 @@ func (hive HIVE) Read() (*HIVEInfo, error) {
 			h, err := strconv.Atoi(sta.Hashrate)
 			rh, rerr := strconv.Atoi(sta.Hashrate)
 			if err != nil && rerr != nil {
+				log.Printf("err1:%s  err2:%s\n", err, rerr)
+			} else {
 				info.Hashrate = float64(h / 1000000)
 				info.ReportedHashrate = float64(rh / 1000000)
+
 			}
 		}
 	}
