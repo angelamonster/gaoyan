@@ -144,12 +144,12 @@ func (hive HIVE) PublishConfig(c mqtt.Client) {
 	config_topics := []string{}
 	config_payloads := []string{}
 
-	//cat := []string{"onlineWorkerCount", "hashrate", "reportedHashrate", "totalPaid", "totalUnpaid", "expectedReward24H"}
-	cat := []string{"w", "hr", "rhr", "tp", "tup", "e24h"}
+	cat := []string{"onlineWorkerCount", "hashrate", "reportedHashrate", "totalPaid", "totalUnpaid", "expectedReward24H"}
+	scat := []string{"w", "hr", "rhr", "tp", "tup", "e24h"}
 	unit := []string{"U", "MH", "MH", "ETH", "ETH", "ETH"}
 	for i, c := range cat {
 		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/hive/%s/config", c))
-		config_payloads = append(config_payloads, fmt.Sprintf("{\"name\": \"hive-%s\", \"unique_id\": \"hive-%s\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"%s\" ,  \"value_template\": \"{{ value_json.%s }}\"  , \"expire_after\":600 }", c, c, topic_state, unit[i], c))
+		config_payloads = append(config_payloads, fmt.Sprintf("{\"name\": \"hive-%s\", \"unique_id\": \"hive-%s\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"%s\" ,  \"value_template\": \"{{ value_json.%s }}\"  , \"expire_after\":600 }", c, c, topic_state, unit[i], scat[i]))
 	}
 
 	for i, topic := range config_topics {
