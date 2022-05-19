@@ -25,30 +25,30 @@ type METER struct {
 }
 type METERInfo struct {
 	Timestamp int64     `json:"ts"` //timestamp
-	v         []float64 `json:"v"`
+	V_Phase   []float64 `json:"v"`
 	VA        float64   `json:"-"`
 	VB        float64   `json:"-"`
 	VC        float64   `json:"-"`
-	i         []float64 `json:"i"`
+	I_Phase   []float64 `json:"i"`
 	IA        float64   `json:"-"`
 	IB        float64   `json:"-"`
 	IC        float64   `json:"-"`
 	P         float64   `json:"P"`
-	p         []float64 `json:"p"`
+	P_Phase   []float64 `json:"p"`
 	PA        float64   `json:"-"`
 	PB        float64   `json:"-"`
 	PC        float64   `json:"-"`
 	Q         float64   `json:"Q"` // reactive power 无功功率 Q Var
-	q         []float64 `json:"q"`
+	Q_Phase   []float64 `json:"q"`
 	QA        float64   `json:"-"`
 	QB        float64   `json:"-"`
 	QC        float64   `json:"-"`
 	S         float64   `json:"S"` // Aparent Power 视在功率 S VA
-	s         []float64 `json:"s"`
+	S_Phase   []float64 `json:"s"`
 	SA        float64   `json:"-"`
 	SB        float64   `json:"-"`
 	SC        float64   `json:"-"`
-	f         []float64 `json:"f"`
+	F_Phase   []float64 `json:"f"`
 	FA        float64   `json:"-"`
 	FB        float64   `json:"-"`
 	FC        float64   `json:"-"`
@@ -106,42 +106,42 @@ func (m METER) Read(host string, port int) (*METERInfo, error) {
 			info.VA = math.Round(byte16_to_float64(results, 0x00*2)) / 10
 			info.VB = math.Round(byte16_to_float64(results, 0x01*2)) / 10
 			info.VC = math.Round(byte16_to_float64(results, 0x02*2)) / 10
-			info.v = append(info.v, info.VA)
-			info.v = append(info.v, info.VB)
-			info.v = append(info.v, info.VC)
+			info.V_Phase = append(info.V_Phase, info.VA)
+			info.V_Phase = append(info.V_Phase, info.VB)
+			info.V_Phase = append(info.V_Phase, info.VC)
 			info.IA = byte16_to_float64(results, (0x03+0)*2) / 100
 			info.IB = byte16_to_float64(results, (0x03+1)*2) / 100
 			info.IC = byte16_to_float64(results, (0x03+2)*2) / 100
-			info.i = append(info.i, info.IA)
-			info.i = append(info.i, info.IB)
-			info.i = append(info.i, info.IC)
+			info.I_Phase = append(info.I_Phase, info.IA)
+			info.I_Phase = append(info.I_Phase, info.IB)
+			info.I_Phase = append(info.I_Phase, info.IC)
 			info.P = byte16_to_float64(results, (0x07)*2)
 			info.PA = byte16_to_float64(results, (0x08+0)*2)
 			info.PB = byte16_to_float64(results, (0x08+1)*2)
 			info.PC = byte16_to_float64(results, (0x08+2)*2)
-			info.p = append(info.p, info.PA)
-			info.p = append(info.p, info.PB)
-			info.p = append(info.p, info.PC)
+			info.P_Phase = append(info.P_Phase, info.PA)
+			info.P_Phase = append(info.P_Phase, info.PB)
+			info.P_Phase = append(info.P_Phase, info.PC)
 			info.Q = byte16_to_float64(results, (0x0b)*2)
 			info.QA = byte16_to_float64(results, (0x0c+0)*2)
 			info.QB = byte16_to_float64(results, (0x0c+1)*2)
 			info.QC = byte16_to_float64(results, (0x0c+2)*2)
-			info.q = append(info.q, info.QA)
-			info.q = append(info.q, info.QB)
-			info.q = append(info.q, info.QC)
+			info.Q_Phase = append(info.Q_Phase, info.QA)
+			info.Q_Phase = append(info.Q_Phase, info.QB)
+			info.Q_Phase = append(info.Q_Phase, info.QC)
 			info.S = byte16_to_float64(results, (0x0f)*2)
 			info.SA = byte16_to_float64(results, (0x10+0)*2)
 			info.SB = byte16_to_float64(results, (0x10+1)*2)
 			info.SC = byte16_to_float64(results, (0x10+2)*2)
-			info.s = append(info.s, info.SA)
-			info.s = append(info.s, info.SB)
-			info.s = append(info.s, info.SC)
+			info.S_Phase = append(info.S_Phase, info.SA)
+			info.S_Phase = append(info.S_Phase, info.SB)
+			info.S_Phase = append(info.S_Phase, info.SC)
 			info.FA = byte16_to_float64(results, (0x1a+0)*2) / 100
 			info.FB = byte16_to_float64(results, (0x1a+1)*2) / 100
 			info.FC = byte16_to_float64(results, (0x1a+2)*2) / 100
-			info.f = append(info.f, info.FA)
-			info.f = append(info.f, info.FB)
-			info.f = append(info.f, info.FC)
+			info.F_Phase = append(info.F_Phase, info.FA)
+			info.F_Phase = append(info.F_Phase, info.FB)
+			info.F_Phase = append(info.F_Phase, info.FC)
 			info.E = byte32_to_float64(results, (0x1D)*2) / 100
 
 			info.Timestamp = time.Now().Unix()
