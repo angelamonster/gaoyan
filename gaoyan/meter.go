@@ -24,29 +24,35 @@ type METER struct {
 	ConfigSent bool
 }
 type METERInfo struct {
-	Timestamp int64   `json:"ts"` //timestamp
-	VA        float64 `json:"va"`
-	VB        float64 `json:"vb"`
-	VC        float64 `json:"vc"`
-	IA        float64 `json:"ia"`
-	IB        float64 `json:"ib"`
-	IC        float64 `json:"ic"`
-	P         float64 `json:"p"`
-	PA        float64 `json:"pa"`
-	PB        float64 `json:"pb"`
-	PC        float64 `json:"pc"`
-	Q         float64 `json:"q"` // reactive power 无功功率 Q Var
-	QA        float64 `json:"qa"`
-	QB        float64 `json:"qb"`
-	QC        float64 `json:"qc"`
-	S         float64 `json:"s"` // Aparent Power 视在功率 S VA
-	SA        float64 `json:"sa"`
-	SB        float64 `json:"sb"`
-	SC        float64 `json:"sc"`
-	FA        float64 `json:"fa"`
-	FB        float64 `json:"fb"`
-	FC        float64 `json:"fc"`
-	E         float64 `json:"e"`
+	Timestamp int64     `json:"ts"` //timestamp
+	v         []float64 `json:"v"`
+	VA        float64   `json:"-"`
+	VB        float64   `json:"-"`
+	VC        float64   `json:"-"`
+	i         []float64 `json:"i"`
+	IA        float64   `json:"-"`
+	IB        float64   `json:"-"`
+	IC        float64   `json:"-"`
+	P         float64   `json:"P"`
+	p         []float64 `json:"p"`
+	PA        float64   `json:"-"`
+	PB        float64   `json:"-"`
+	PC        float64   `json:"-"`
+	Q         float64   `json:"Q"` // reactive power 无功功率 Q Var
+	q         []float64 `json:"q"`
+	QA        float64   `json:"-"`
+	QB        float64   `json:"-"`
+	QC        float64   `json:"-"`
+	S         float64   `json:"S"` // Aparent Power 视在功率 S VA
+	s         []float64 `json:"s"`
+	SA        float64   `json:"-"`
+	SB        float64   `json:"-"`
+	SC        float64   `json:"-"`
+	f         []float64 `json:"f"`
+	FA        float64   `json:"-"`
+	FB        float64   `json:"-"`
+	FC        float64   `json:"-"`
+	E         float64   `json:"E"`
 }
 
 func byte16_to_float64(results []byte, pos int) float64 {
@@ -100,25 +106,42 @@ func (m METER) Read(host string, port int) (*METERInfo, error) {
 			info.VA = math.Round(byte16_to_float64(results, 0x00*2)) / 10
 			info.VB = math.Round(byte16_to_float64(results, 0x01*2)) / 10
 			info.VC = math.Round(byte16_to_float64(results, 0x02*2)) / 10
+			info.v = append(info.v, info.VA)
+			info.v = append(info.v, info.VB)
+			info.v = append(info.v, info.VC)
 			info.IA = byte16_to_float64(results, (0x03+0)*2) / 100
 			info.IB = byte16_to_float64(results, (0x03+1)*2) / 100
 			info.IC = byte16_to_float64(results, (0x03+2)*2) / 100
+			info.i = append(info.i, info.IA)
+			info.i = append(info.i, info.IB)
+			info.i = append(info.i, info.IC)
 			info.P = byte16_to_float64(results, (0x07)*2)
 			info.PA = byte16_to_float64(results, (0x08+0)*2)
 			info.PB = byte16_to_float64(results, (0x08+1)*2)
 			info.PC = byte16_to_float64(results, (0x08+2)*2)
+			info.p = append(info.p, info.PA)
+			info.p = append(info.p, info.PB)
+			info.p = append(info.p, info.PC)
 			info.Q = byte16_to_float64(results, (0x0b)*2)
 			info.QA = byte16_to_float64(results, (0x0c+0)*2)
 			info.QB = byte16_to_float64(results, (0x0c+1)*2)
 			info.QC = byte16_to_float64(results, (0x0c+2)*2)
+			info.q = append(info.q, info.QA)
+			info.q = append(info.q, info.QB)
+			info.q = append(info.q, info.QC)
 			info.S = byte16_to_float64(results, (0x0f)*2)
 			info.SA = byte16_to_float64(results, (0x10+0)*2)
 			info.SB = byte16_to_float64(results, (0x10+1)*2)
 			info.SC = byte16_to_float64(results, (0x10+2)*2)
+			info.s = append(info.s, info.SA)
+			info.s = append(info.s, info.SB)
+			info.s = append(info.s, info.SC)
 			info.FA = byte16_to_float64(results, (0x1a+0)*2) / 100
 			info.FB = byte16_to_float64(results, (0x1a+1)*2) / 100
 			info.FC = byte16_to_float64(results, (0x1a+2)*2) / 100
-
+			info.f = append(info.f, info.FA)
+			info.f = append(info.f, info.FB)
+			info.f = append(info.f, info.FC)
 			info.E = byte32_to_float64(results, (0x1D)*2) / 100
 
 			info.Timestamp = time.Now().Unix()
@@ -145,10 +168,11 @@ func (m METER) PublishConfig(c mqtt.Client) {
 	config_payloads := []string{}
 
 	cat := []string{"va", "vb", "vc", "ia", "ib", "ic", "p", "pa", "pb", "pc", "q", "qa", "qb", "qc", "s", "sa", "sb", "sc", "fa", "fb", "fc", "e"}
+	tpl := []string{"v[0]", "v[1]", "v[2]", "i[0]", "i[1]", "i[2]", "P", "p[0]", "p[1]", "p[2]", "Q", "q[0]", "q[1]", "q[2]", "S", "s[0]", "s[1]", "s[2]", "f[0]", "f[1]", "f[2]", "E"}
 	unit := []string{"V", "V", "V", "A", "A", "A", "W", "W", "W", "W", "Var", "Var", "Var", "Var", "VA", "VA", "VA", "VA", "HZ", "HZ", "HZ", "kWh"}
 	for i, c := range cat {
 		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/powermeter%s/%s/config", m.Name, c))
-		config_payloads = append(config_payloads, fmt.Sprintf("{\"device_class\": \"power\", \"name\": \"power-meter-%s-%s\", \"unique_id\": \"power-meter-%s-%s\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"%s\" ,  \"value_template\": \"{{ value_json.%s }}\"  , \"expire_after\":120 }", m.Name, c, m.Name, c, topic_state, unit[i], c))
+		config_payloads = append(config_payloads, fmt.Sprintf("{\"device_class\": \"power\", \"name\": \"power-meter-%s-%s\", \"unique_id\": \"power-meter-%s-%s\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"%s\" ,  \"value_template\": \"{{ value_json.%s }}\"  , \"expire_after\":120 }", m.Name, c, m.Name, c, topic_state, unit[i], tpl[i]))
 	}
 
 	for i, topic := range config_topics {
