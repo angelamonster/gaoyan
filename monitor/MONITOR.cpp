@@ -248,6 +248,7 @@ bool MONITOR::mqtt_callback(char* intopic, byte* in_payload, unsigned int length
     unpaid = doc["tup"];
     forcast_24h = doc["e24h"];
     invalid = true;
+    IPRINT("P");
     return true;
   }
 
@@ -259,6 +260,7 @@ bool MONITOR::mqtt_callback(char* intopic, byte* in_payload, unsigned int length
 //    p[2] = doc["p"][2];
     ptotal = doc["P"];
     invalid = true;
+    IPRINT("M");
     return true;
   }
 
@@ -270,6 +272,7 @@ bool MONITOR::mqtt_callback(char* intopic, byte* in_payload, unsigned int length
       t[i] = doc["ht"];
       invalid = true;
       //DPRINTLN(payload);
+    IPRINTF("%d",i);
       return true;
     }
 

@@ -28,6 +28,7 @@
 #define TRIGGER_PIN 0
 #endif
 
+const int PIN_LED = 2;
 
 //
 //extern unsigned int pub_signal;
@@ -40,9 +41,8 @@
 int publishMQTTMessage(PubSubClient  &client, const char* topic, char* payload, bool retain);
 //void mqttcallback(char* intopic, byte* in_payload, unsigned int length);
 
-void setup_OTA();
-void setup_wifi(WiFiManager &wm);
-void checkButton(WiFiManager &wm);
+//void setup_OTA();
+//void checkButton(WiFiManager &wm);
 
 void led_on();
 void led_off();
