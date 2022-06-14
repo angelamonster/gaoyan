@@ -90,7 +90,9 @@ func (rig RIG) PublishData(c mqtt.Client, json_data string) {
 
 	topic_state := fmt.Sprintf("haworkshopyc1/sensor/%s/state", rig.ID)
 
-	c.Publish(topic_state, 0, false, json_data)
+	token := c.Publish(topic_state, 0, false, json_data)
+	token.Wait()
+	time.Sleep(time.Second)
 }
 
 func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
@@ -130,7 +132,9 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 
 	for i, topic := range config_topics {
 		//log.Println(config_payloads[i])
-		c.Publish(topic, 2, true, config_payloads[i])
+		token := c.Publish(topic, 2, true, config_payloads[i])
+		token.Wait()
+		time.Sleep(time.Second)
 	}
 
 }
