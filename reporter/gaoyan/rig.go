@@ -98,6 +98,7 @@ func (rig RIG) PublishData(c mqtt.Client, json_data string) {
 func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 
 	log.Printf("PublishConfig for %s", rig.ID)
+	log.Printf(json_data)
 	topic_state := fmt.Sprintf("haworkshopyc1/sensor/%s/state", rig.ID)
 
 	mi := new(claymore.MinerInfo)
