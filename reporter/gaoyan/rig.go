@@ -131,7 +131,11 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 	}
 
 	for i, topic := range config_topics {
-		//log.Println(config_payloads[i])
+		log.Print(i)
+		log.Print(" - ")
+		log.Print(topic)
+		log.Print(" - ")
+		log.Println(config_payloads[i])
 		token := c.Publish(topic, 2, true, config_payloads[i])
 		token.Wait()
 		time.Sleep(time.Second)
