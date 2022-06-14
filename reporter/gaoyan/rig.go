@@ -103,8 +103,10 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 
 	mi := new(claymore.MinerInfo)
 
-	json.Unmarshal([]byte(json_data), &mi)
-
+	err := json.Unmarshal([]byte(json_data), &mi)
+	if err != nil {
+		log.Print(err)
+	}
 	//     #topic_totalpower_config = "haworkshopyc1/sensor/{}/totalpower/config".format(self.id)
 	//     #totalpower_config = '{{"device_class": "power", "name": "{}-totalpower", "unique_id": "{}-totalpower", "state_topic": "{}",   "unit_of_measurement": "W","value_template": "{{{{ value_json.{}.totalpower }}}}" }}'.format(self.id,self.id,topic_state,self.id)
 	//     #mqtt.client.publish(topic_totalpower_config, payload=totalpower_config, qos=2,retain=True)     # 发送消息
