@@ -96,6 +96,7 @@ func (rig RIG) PublishData(c mqtt.Client, json_data string) {
 }
 
 func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
+
 	log.Printf("PublishConfig for %s", rig.ID)
 	topic_state := fmt.Sprintf("haworkshopyc1/sensor/%s/state", rig.ID)
 
@@ -116,7 +117,7 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 	config_payloads := []string{fmt.Sprintf("{\"name\": \"%s-totalhash\", \"unique_id\": \"%s-totalhash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"MH\",\"value_template\": \"{{ value_json.c.hr }}\" }", rig.ID, rig.ID, topic_state),
 		fmt.Sprintf("{\"device_class\": \"temperature\", \"name\": \"%s-hightemperature\", \"unique_id\": \"%s-hightemperature\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"°C\",\"value_template\": \"{{ value_json.ht }}\" }", rig.ID, rig.ID, topic_state)}
 
-	for i, _ := range mi.GPUS {
+	for i, g := range mi.GPUS {
 		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/temp/config", rig.ID, i))
 		config_payloads = append(config_payloads, fmt.Sprintf("{\"device_class\": \"temperature\", \"name\": \"%s-%d-temp\", \"unique_id\": \"%s-%d-temp\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"°C\" ,  \"value_template\": \"{{ value_json.g[%d].t }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
 
@@ -126,16 +127,13 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 		config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/hash/config", rig.ID, i))
 		config_payloads = append(config_payloads, fmt.Sprintf("{\"name\": \"%s-%d-hash\", \"unique_id\": \"%s-%d-hash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"MH\" ,  \"value_template\": \"{{ value_json.g[%d].hr }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
 
+		log.Print(fmt.Sprintf("%d-%s", i, g.String()))
 		//config_topics = append(config_topics, fmt.Sprintf("haworkshopyc1/sensor/%s-%d/althash/config", rig.ID, i))
 		//config_payloads = append(config_payloads, fmt.Sprintf("{\"name\": \"%s-%d-althash\", \"unique_id\": \"%s-%d-althash\", \"state_topic\": \"%s\",   \"unit_of_measurement\": \"MH\" ,  \"value_template\": \"{{ value_json.GPUS[%d].ahr }}\"  , \"expire_after\":120 }", rig.ID, i, rig.ID, i, topic_state, i))
 	}
 
 	for i, topic := range config_topics {
-		log.Print(i)
-		log.Print(" - ")
-		log.Print(topic)
-		log.Print(" - ")
-		log.Println(config_payloads[i])
+		log.Print(fmt.Sprintf("%d-%s-%s", i, topic, config_payloads[i]))
 		token := c.Publish(topic, 2, true, config_payloads[i])
 		token.Wait()
 		time.Sleep(time.Second)

@@ -42,7 +42,7 @@ func do_job(c mqtt.Client) {
 					}
 					//log.Print(json_string)
 					rigs[i].PublishData(c, json_string)
-					log.Printf("%s - %d - %d\n", rigs[i].ID, mi.MainCrypto.HashRate, mi.AltCrypto.HashRate)
+					log.Printf("%s - %d\n", rigs[i].ID, mi.MainCrypto.HashRate)
 				}
 			}
 		}(i)
