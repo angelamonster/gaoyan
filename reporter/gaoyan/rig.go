@@ -106,6 +106,8 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 	err := json.Unmarshal([]byte(json_data), &mi)
 	if err != nil {
 		log.Print(err)
+	} else {
+		log.Print(len(mi.GPUS))
 	}
 	//     #topic_totalpower_config = "haworkshopyc1/sensor/{}/totalpower/config".format(self.id)
 	//     #totalpower_config = '{{"device_class": "power", "name": "{}-totalpower", "unique_id": "{}-totalpower", "state_topic": "{}",   "unit_of_measurement": "W","value_template": "{{{{ value_json.{}.totalpower }}}}" }}'.format(self.id,self.id,topic_state,self.id)
