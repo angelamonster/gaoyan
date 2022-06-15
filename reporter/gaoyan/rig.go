@@ -1,6 +1,7 @@
 package gaoyan
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -84,14 +85,24 @@ func (rig RIG) GetStat() (*MinerInfo, error) {
 	//return "okok test", nil
 }
 
-func (rig RIG) PublishData(c mqtt.Client, json_data string) {
+func (rig RIG) PublishData(c mqtt.Client, mi *MinerInfo) {
 	//log.Printf("PublishData for %s", rig.ID)
 
 	topic_state := fmt.Sprintf("haworkshopyc1/sensor/%s/state", rig.ID)
 
-	token := c.Publish(topic_state, 0, false, json_data)
-	token.Wait()
+	// token := c.Publish(topic_state, 0, false, json_data)
+	// token.Wait()
 	//time.Sleep(time.Second)
+
+	json_bytes, err := json.Marshal(mi)
+	if err == nil {
+		if token := c.Publish(topic_state, 0, false, string(json_bytes)); token.Wait() && token.Error() != nil {
+			log.Printf("PublishData for %s failed: %s\n", rig.ID, token.Error())
+		}
+	} else {
+		log.Printf("PublishData for %s failed: %s\n", rig.ID, err.Error())
+	}
+
 }
 
 func (rig RIG) PublishConfig(c mqtt.Client, mi *MinerInfo) {
@@ -135,10 +146,9 @@ func (rig RIG) PublishConfig(c mqtt.Client, mi *MinerInfo) {
 	}
 
 	for i, topic := range config_topics {
-		log.Print(fmt.Sprintf("%d-%s", i, topic))
-		token := c.Publish(topic, 2, true, config_payloads[i])
-		token.Wait()
-		//time.Sleep(time.Second)
+		if token := c.Publish(topic, 2, true, config_payloads[i]); token.Wait() && token.Error() != nil {
+			log.Printf("%s - PublishConfig %s  failed: %s\n", rig.ID, topic, token.Error())
+		}
 	}
 
 }
