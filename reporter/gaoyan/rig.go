@@ -1,7 +1,6 @@
 package gaoyan
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -38,7 +37,7 @@ type MinerInfo struct {
 	AltCrypto  Crypto   `json:"-"`  //altcrypto
 	MainPool   PoolInfo `json:"-"`  //mainpool
 	AltPool    PoolInfo `json:"-"`  //altpool
-	GPUS       []GPU    //`json:"g"`  //GPUS
+	GPUS       []GPU    `json:"g"`  //GPUS
 	Timestamp  int64    `json:"ts"` // timestamp
 	HighTemp   int      `json:"ht"` // hightemperature
 }
@@ -92,21 +91,21 @@ func (rig RIG) PublishData(c mqtt.Client, json_data string) {
 
 	token := c.Publish(topic_state, 0, false, json_data)
 	token.Wait()
-	time.Sleep(time.Second)
+	//time.Sleep(time.Second)
 }
 
-func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
+func (rig RIG) PublishConfig(c mqtt.Client, mi *MinerInfo) {
 
 	log.Printf("PublishConfig for %s", rig.ID)
 	//log.Printf(json_data)
 	topic_state := fmt.Sprintf("haworkshopyc1/sensor/%s/state", rig.ID)
 
-	mi := new(claymore.MinerInfo)
+	//mi := new(claymore.MinerInfo)
 
-	err := json.Unmarshal([]byte(json_data), &mi)
-	if err != nil {
-		log.Print(err)
-	}
+	//err := json.Unmarshal([]byte(json_data), &mi)
+	//if err != nil {
+	//	log.Print(err)
+	//}
 	//     #topic_totalpower_config = "haworkshopyc1/sensor/{}/totalpower/config".format(self.id)
 	//     #totalpower_config = '{{"device_class": "power", "name": "{}-totalpower", "unique_id": "{}-totalpower", "state_topic": "{}",   "unit_of_measurement": "W","value_template": "{{{{ value_json.{}.totalpower }}}}" }}'.format(self.id,self.id,topic_state,self.id)
 	//     #mqtt.client.publish(topic_totalpower_config, payload=totalpower_config, qos=2,retain=True)     # 发送消息
@@ -139,7 +138,7 @@ func (rig RIG) PublishConfig(c mqtt.Client, json_data string) {
 		log.Print(fmt.Sprintf("%d-%s", i, topic))
 		token := c.Publish(topic, 2, true, config_payloads[i])
 		token.Wait()
-		time.Sleep(time.Second)
+		//time.Sleep(time.Second)
 	}
 
 }

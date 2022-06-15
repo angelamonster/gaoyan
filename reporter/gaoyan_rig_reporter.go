@@ -37,7 +37,7 @@ func do_job(c mqtt.Client) {
 					json_string := string(json_bytes)
 					if false == rigs[i].ConfigSent {
 						log.Println("Publish Config")
-						rigs[i].PublishConfig(c, json_string)
+						rigs[i].PublishConfig(c, mi)
 						rigs[i].ConfigSent = true
 					}
 					//log.Print(json_string)
