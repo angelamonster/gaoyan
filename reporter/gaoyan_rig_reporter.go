@@ -14,9 +14,9 @@ import (
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
-var rig_w0004 = gaoyan.RIG{ID: "w0004", IP: "192.168.0.204", Username: "user", Password: "1", ClaymorePort: 3334, ConfigSent: false}
-var rig_w0005 = gaoyan.RIG{ID: "w0005", IP: "192.168.0.205", Username: "user", Password: "9UNXmhyV", ClaymorePort: 3334, ConfigSent: false}
-var rig_w0007 = gaoyan.RIG{ID: "w0007", IP: "192.168.0.207", Username: "user", Password: "1", ClaymorePort: 3334, ConfigSent: false}
+var rig_w0004 = gaoyan.RIG{ID: "w0004", IP: "192.168.0.204", Username: "user", Password: "1", ClaymorePort: 3334, ConfigSent: false, Busy: false}
+var rig_w0005 = gaoyan.RIG{ID: "w0005", IP: "192.168.0.205", Username: "user", Password: "9UNXmhyV", ClaymorePort: 3334, ConfigSent: false, Busy: false}
+var rig_w0007 = gaoyan.RIG{ID: "w0007", IP: "192.168.0.207", Username: "user", Password: "1", ClaymorePort: 3334, ConfigSent: false, Busy: false}
 
 var rigs = [3]gaoyan.RIG{rig_w0004, rig_w0005, rig_w0007}
 
