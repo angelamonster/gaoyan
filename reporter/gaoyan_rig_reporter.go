@@ -33,7 +33,7 @@ func do_job(c mqtt.Client) {
 				}
 				//log.Print(json_string)
 				rigs[i].PublishData(c, mi)
-				log.Printf("%s - %dMH - %d℃\n", rigs[i].ID, mi.MainCrypto.HashRate, mi.HighTemp)
+				log.Printf("%s - %dMH - %d°C\n", rigs[i].ID, mi.MainCrypto.HashRate, mi.HighTemp)
 			} else {
 				log.Printf("%s getstat error:%s\n", rigs[i].ID, err.Error())
 			}
