@@ -153,6 +153,8 @@ func (rig RIG) PublishConfig(c mqtt.Client, mi *MinerInfo) {
 	for i, topic := range config_topics {
 		if token := c.Publish(topic, 2, true, config_payloads[i]); token.Wait() && token.Error() != nil {
 			log.Printf("%s - PublishConfig %s  failed: %s\n", rig.ID, topic, token.Error())
+		} else {
+			log.Printf("%s - %s\n", rig.ID, topic)
 		}
 	}
 
