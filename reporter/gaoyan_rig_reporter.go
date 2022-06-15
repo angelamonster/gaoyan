@@ -24,7 +24,7 @@ func do_job(c mqtt.Client) {
 	//log.Println("loop")
 
 	for i, _ := range rigs {
-		log.Printf("%s timestamp gap: %ds\n", rigs[i].ID, time.Now().Unix()-rigs[i].BusyTimeStamp)
+		//log.Printf("%s timestamp gap: %ds\n", rigs[i].ID, time.Now().Unix()-rigs[i].BusyTimeStamp)
 		if rigs[i].Busy == false || time.Now().Unix()-rigs[i].BusyTimeStamp > 30 {
 			go func(i int) {
 				rigs[i].Busy = true
