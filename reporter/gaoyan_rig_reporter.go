@@ -24,21 +24,27 @@ func do_job(c mqtt.Client) {
 	//log.Println("loop")
 
 	for i, _ := range rigs {
-		go func(i int) {
-			mi, err := rigs[i].GetStat()
-			if err == nil {
-				if false == rigs[i].ConfigSent {
-					rigs[i].PublishConfig(c, mi)
-					rigs[i].ConfigSent = true
+		log.Printf("%s timestamp gap: %ds\n", rigs[i].ID, time.Now().Unix()-rigs[i].BusyTimeStamp)
+		if rigs[i].Busy == false || time.Now().Unix()-rigs[i].BusyTimeStamp > 30 {
+			go func(i int) {
+				rigs[i].Busy = true
+				rigs[i].BusyTimeStamp = time.Now().Unix()
+				mi, err := rigs[i].GetStat()
+				if err == nil {
+					if false == rigs[i].ConfigSent {
+						rigs[i].PublishConfig(c, mi)
+						rigs[i].ConfigSent = true
+					}
+					//log.Print(json_string)
+					rigs[i].PublishData(c, mi)
+					log.Printf("%s - %dMH - %d\n", rigs[i].ID, mi.MainCrypto.HashRate, mi.HighTemp)
+				} else {
+					log.Printf("%s getstat error:%s\n", rigs[i].ID, err.Error())
 				}
-				//log.Print(json_string)
-				rigs[i].PublishData(c, mi)
-				log.Printf("%s - %dMH - %d°C\n", rigs[i].ID, mi.MainCrypto.HashRate, mi.HighTemp)
-			} else {
-				log.Printf("%s getstat error:%s\n", rigs[i].ID, err.Error())
-			}
-		}(i)
 
+				rigs[i].Busy = false
+			}(i)
+		}
 	}
 }
 

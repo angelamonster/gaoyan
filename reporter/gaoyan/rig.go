@@ -44,12 +44,14 @@ type MinerInfo struct {
 }
 
 type RIG struct {
-	ID           string
-	IP           string
-	Username     string
-	Password     string
-	ClaymorePort int
-	ConfigSent   bool
+	ID            string
+	IP            string
+	Username      string
+	Password      string
+	ClaymorePort  int
+	ConfigSent    bool
+	Busy          bool
+	BusyTimeStamp int64
 }
 
 func (rig RIG) GetStat() (*MinerInfo, error) {
